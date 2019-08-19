@@ -5,6 +5,9 @@ jobs:
       - image: golang:1.12
     working_directory: /go/src/github.com/Trojan295/chinchilla-server
     steps:
+      - add_ssh_keys:
+          fingerprints:
+          - "cf:b1:dd:8d:15:5a:8e:3e:1b:24:f4:d3:19:bc:01:93"
       - checkout
       - run: apt update
       - run: apt install -y golang-glide protobuf-compiler golang-protobuf-extensions-dev
@@ -18,6 +21,9 @@ jobs:
       - image: golang:1.12
     working_directory: /go/src/github.com/Trojan295/chinchilla-server
     steps:
+      - add_ssh_keys:
+          fingerprints:
+          - "cf:b1:dd:8d:15:5a:8e:3e:1b:24:f4:d3:19:bc:01:93"
       - checkout
       - run: apt update
       - run: apt install -y golang-glide protobuf-compiler golang-protobuf-extensions-dev zip
