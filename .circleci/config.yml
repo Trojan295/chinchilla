@@ -1,0 +1,37 @@
+version: 2
+jobs:
+  lint:
+    docker:
+      - image: golang:1.12
+    working_directory: /go/src/github.com/Trojan295/chinchilla-server
+    steps:
+      - checkout
+      - run: apt update
+      - run: apt install -y golang-glide protobuf-compiler golang-protobuf-extensions-dev
+      - run: make deps
+      - run: go fmt $(go list ./... | grep -v /vendor/)
+      - run: go vet $(go list ./... | grep -v /vendor/)
+      - run: go test -race $(go list ./... | grep -v /vendor/)
+
+  build:
+    docker:
+      - image: golang:1.12
+    working_directory: /go/src/github.com/Trojan295/chinchilla-server
+    steps:
+      - checkout
+      - run: apt update
+      - run: apt install -y golang-glide protobuf-compiler golang-protobuf-extensions-dev zip
+      - run: make deps
+      - run: make release
+      - store_artifacts:
+          path: chinchilla-server.zip
+          destination: chinchilla-server.zip
+
+workflows:
+  version: 2
+  lint_and_build:
+    jobs:
+      - lint
+      - build:
+          requires:
+            - lint

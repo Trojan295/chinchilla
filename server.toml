@@ -1,0 +1,5 @@
+[server]
+port = 10110
+
+[etcd]
+address = "http://127.0.0.1:2379"
