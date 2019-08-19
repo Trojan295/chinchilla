@@ -1,0 +1,13 @@
+[Unit]
+Description=Chinchilla Server
+
+[Service]
+Type=simple
+WorkingDirectory=/home/debian
+ExecStart=/usr/local/bin/chinchilla-server
+Restart=always
+RestartSec=5
+Environment="AUTH0_KEY="
+
+[Install]
+WantedBy=multi-user.target
