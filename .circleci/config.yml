@@ -66,13 +66,15 @@ workflows:
   lint_build_release:
     jobs:
       - lint:
-          tags:
-            only: /.*/
+          filters:
+            tags:
+              only: /.*/
       - build:
           requires:
             - lint
-          tags:
-            only: /.*/
+          filters:
+            tags:
+              only: /.*/
       - publish-github-release:
           requires:
             - build
