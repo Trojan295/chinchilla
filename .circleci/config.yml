@@ -39,7 +39,7 @@ jobs:
           command: |
             apt update
             apt install -y golang-glide zip
-            export SERVER_VERSION=$CIRCLE_CI >> $BASH_ENV
+            export SERVER_VERSION=$CIRCLE_SHA1 >> $BASH_ENV
       - run:
           command: make release
       - store_artifacts:
