@@ -63,7 +63,7 @@ jobs:
 
 workflows:
   version: 2
-  lint_and_build:
+  lint_build_release:
     jobs:
       - lint
       - build:
