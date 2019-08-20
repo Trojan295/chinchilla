@@ -39,9 +39,8 @@ jobs:
           command: |
             apt update
             apt install -y golang-glide zip
-            export SERVER_VERSION=$CIRCLE_SHA1 >> $BASH_ENV
       - run:
-          command: make release
+          command: SERVER_VERSION=${CIRCLE_TAG:-$CIRCLE_SHA1} make release
       - store_artifacts:
           path: chinchilla-server.zip
           destination: chinchilla-server.zip
