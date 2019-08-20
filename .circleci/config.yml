@@ -42,8 +42,24 @@ jobs:
       - run:
           command: SERVER_VERSION=${CIRCLE_TAG:-$CIRCLE_SHA1} make release
       - store_artifacts:
-          path: chinchilla-server.zip
+          path: release/chinchilla-server.zip
           destination: chinchilla-server.zip
+      - persist_to_workspace:
+          root: .
+          paths:
+            - release
+
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            VERSION=$CIRCLE_TAG
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./release/
 
 workflows:
   version: 2
@@ -53,3 +69,11 @@ workflows:
       - build:
           requires:
             - lint
+      - publish-github-release:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
