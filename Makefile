@@ -1,6 +1,5 @@
 
 SERVER_MAIN := cmd/server.go
-SERVER_VERSION := 0.1.0
 
 .PHONY: deps release
 

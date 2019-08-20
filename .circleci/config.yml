@@ -9,12 +9,20 @@ jobs:
           fingerprints:
           - "cf:b1:dd:8d:15:5a:8e:3e:1b:24:f4:d3:19:bc:01:93"
       - checkout
-      - run: apt update
-      - run: apt install -y golang-glide protobuf-compiler golang-protobuf-extensions-dev
-      - run: make deps
-      - run: go fmt $(go list ./... | grep -v /vendor/)
-      - run: go vet $(go list ./... | grep -v /vendor/)
-      - run: go test -race $(go list ./... | grep -v /vendor/)
+      - run:
+          command: |
+            apt update
+            apt install -y golang-glide
+            make deps
+      - run:
+          command: |
+            go fmt $(go list ./... | grep -v /vendor/)
+            go vet $(go list ./... | grep -v /vendor/)
+            go test -race $(go list ./... | grep -v /vendor/)
+      - persist_to_workspace:
+          root: .
+          paths:
+            - vendor
 
   build:
     docker:
@@ -25,10 +33,16 @@ jobs:
           fingerprints:
           - "cf:b1:dd:8d:15:5a:8e:3e:1b:24:f4:d3:19:bc:01:93"
       - checkout
-      - run: apt update
-      - run: apt install -y golang-glide protobuf-compiler golang-protobuf-extensions-dev zip
-      - run: make deps
-      - run: make release
+      - attach_workspace:
+          at: .
+      - run:
+          command: |
+            apt update
+            apt install -y golang-glide
+      - run:
+          command: make release
+          environment:
+            SERVER_VERSION: $CIRLCE_SHA1
       - store_artifacts:
           path: chinchilla-server.zip
           destination: chinchilla-server.zip
