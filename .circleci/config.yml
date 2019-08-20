@@ -65,10 +65,14 @@ workflows:
   version: 2
   lint_build_release:
     jobs:
-      - lint
+      - lint:
+          tags:
+            only: /.*/
       - build:
           requires:
             - lint
+          tags:
+            only: /.*/
       - publish-github-release:
           requires:
             - build
