@@ -51,15 +51,16 @@ jobs:
 
   publish-github-release:
     docker:
-      - image: cibuilds/github:0.10
+      - image: cibuilds/github:0.12
     steps:
       - attach_workspace:
           at: .
       - run:
           name: "Publish Release on GitHub"
           command: |
+            ls
             echo ${CIRCLE_TAG}
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -replace "${CIRCLE_TAG}" release
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -deletexit ${CIRCLE_TAG} release
 
 workflows:
   version: 2
