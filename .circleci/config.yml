@@ -59,7 +59,7 @@ jobs:
           name: "Publish Release on GitHub"
           command: |
             VERSION=$CIRCLE_TAG
-            ghr -t ${GITHUB_TOKEN} -replace ${VERSION} release
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -replace ${VERSION} release
 
 workflows:
   version: 2
