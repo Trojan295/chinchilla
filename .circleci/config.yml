@@ -57,10 +57,11 @@ jobs:
           at: .
       - run:
           name: "Publish Release on GitHub"
+          context: Github Release
           command: |
             ls
             echo ${CIRCLE_TAG}
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -deletexit ${CIRCLE_TAG} release
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} release
 
 workflows:
   version: 2
