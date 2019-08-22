@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 jobs:
   lint:
     docker:
@@ -9,12 +9,20 @@ jobs:
           fingerprints:
           - "cf:b1:dd:8d:15:5a:8e:3e:1b:24:f4:d3:19:bc:01:93"
       - checkout
-      - run: apt update
-      - run: apt install -y golang-glide protobuf-compiler golang-protobuf-extensions-dev
-      - run: make deps
-      - run: go fmt $(go list ./... | grep -v /vendor/)
-      - run: go vet $(go list ./... | grep -v /vendor/)
-      - run: go test -race $(go list ./... | grep -v /vendor/)
+      - run:
+          command: |
+            apt update
+            apt install -y golang-glide
+            make deps
+      - run:
+          command: |
+            go fmt $(go list ./... | grep -v /vendor/)
+            go vet $(go list ./... | grep -v /vendor/)
+            go test -race $(go list ./... | grep -v /vendor/)
+      - persist_to_workspace:
+          root: .
+          paths:
+            - vendor
 
   build:
     docker:
@@ -25,19 +33,53 @@ jobs:
           fingerprints:
           - "cf:b1:dd:8d:15:5a:8e:3e:1b:24:f4:d3:19:bc:01:93"
       - checkout
-      - run: apt update
-      - run: apt install -y golang-glide protobuf-compiler golang-protobuf-extensions-dev zip
-      - run: make deps
-      - run: make release
+      - attach_workspace:
+          at: .
+      - run:
+          command: |
+            apt update
+            apt install -y golang-glide zip
+      - run:
+          command: SERVER_VERSION=${CIRCLE_TAG:-$CIRCLE_SHA1} make release
       - store_artifacts:
-          path: chinchilla-server.zip
+          path: release/chinchilla-server.zip
           destination: chinchilla-server.zip
+      - persist_to_workspace:
+          root: .
+          paths:
+            - release
+
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.12
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} release
 
 workflows:
   version: 2
-  lint_and_build:
+  lint_build_release:
     jobs:
-      - lint
+      - lint:
+          filters:
+            tags:
+              only: /.*/
       - build:
           requires:
             - lint
+          filters:
+            tags:
+              only: /.*/
+      - publish-github-release:
+          requires:
+            - build
+          context: Github
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/

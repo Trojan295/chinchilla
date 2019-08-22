@@ -1,15 +1,18 @@
 
 SERVER_MAIN := cmd/server.go
-SERVER_VERSION := 0.1.0
+
+SERVER_BINARY := bin/chinchilla-server
+RELEASE_ZIP := release/chinchilla-server.zip
 
 .PHONY: deps release
 
-release: chinchilla-server.zip
+release: $(RELEASE_ZIP)
 
-chinchilla-server: deps $(SERVER_MAIN)
+$(SERVER_BINARY): deps $(SERVER_MAIN)
 	go build -ldflags="-X main.version=$(SERVER_VERSION)" -o $@ $(SERVER_MAIN)
 
-chinchilla-server.zip: chinchilla-server
+$(RELEASE_ZIP): $(SERVER_BINARY)
+	mkdir -p release
 	zip $@ $<
 
 deps:
