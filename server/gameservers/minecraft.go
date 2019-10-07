@@ -53,10 +53,10 @@ func (manager minecraftGameserverManager) createRunConfiguration(definition *ser
 	}, nil
 }
 
-func (manager minecraftGameserverManager) endpoint(gameserver *server.Gameserver, state *common.GameserverState) (string, error) {
+func (manager minecraftGameserverManager) endpoint(gameserver *server.Gameserver, state *common.Gameserver) (string, error) {
 	if state != nil {
 		for _, port := range state.PortMappings {
-			if port.ContainerPort == 25565 {
+			if port.ContainerPort == 25565 && port.Protocol == common.NetworkProtocol_TCP {
 				return fmt.Sprintf("%s:%d", gameserver.RunConfiguration.Agent, port.HostPort), nil
 			}
 		}

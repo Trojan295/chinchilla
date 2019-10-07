@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"net/http"
 
-	common "github.com/Trojan295/chinchilla-common"
 	"github.com/Trojan295/chinchilla-server/server"
 	"github.com/Trojan295/chinchilla-server/server/auth"
 
@@ -100,19 +99,19 @@ func (api *gameserversAPI) listGameservers(c *gin.Context) {
 			continue
 		}
 
-		var gameserverState *common.GameserverState
 		agentState, err := api.agentsStore.GetAgentState(gameserver.RunConfiguration.Agent)
+
+		var address string
 		if err != nil {
 			log.Printf("gameserversAPI GetAgentState error: %v", err)
 		} else {
-			for i := range agentState.GameServersState {
-				if agentState.GameServersState[i].Uuid == gameserver.Definition.UUID {
-					gameserverState = agentState.GameServersState[i]
+			for _, agentServer := range agentState.RunningGameservers {
+				if agentServer.UUID == gameserver.Definition.UUID {
+					address, _ = api.gameserverManager.Endpoint(&gameserver, agentServer)
 				}
 			}
 		}
 
-		address, _ := api.gameserverManager.Endpoint(&gameserver, gameserverState)
 		resp = append(resp, &gameserverStatusResponse{
 			Address: address,
 			Game:    gameserver.Definition.Game,
@@ -120,6 +119,7 @@ func (api *gameserversAPI) listGameservers(c *gin.Context) {
 			UUID:    gameserver.Definition.UUID,
 			Version: gameserver.Definition.Version,
 		})
+
 	}
 
 	c.JSON(http.StatusOK, resp)

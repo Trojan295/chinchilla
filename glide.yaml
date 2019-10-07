@@ -1,6 +1,7 @@
 package: github.com/Trojan295/chinchilla-server
 import:
 - package: github.com/Trojan295/chinchilla-common
+  version: 4a1a073ead5df02e1dea146770092bdaf7d2c364
 - package: github.com/dgrijalva/jwt-go
   version: ^3.2.0
 - package: github.com/gin-gonic/gin

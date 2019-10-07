@@ -16,7 +16,7 @@ type GameserverMetadata struct {
 type gameserverManager interface {
 	metadata() GameserverMetadata
 
-	endpoint(*server.Gameserver, *common.GameserverState) (string, error)
+	endpoint(*server.Gameserver, *common.Gameserver) (string, error)
 	createRunConfiguration(*server.GameserverDefinition) (*common.GameserverRunConfiguration, error)
 }
 
@@ -26,7 +26,7 @@ type GameserverManager struct {
 
 func NewGameserverManager() GameserverManager {
 	return GameserverManager{
-		managers: []gameserverManager{minecraftGameserverManager{}},
+		managers: []gameserverManager{minecraftGameserverManager{}, factorioGameserverManager{}},
 	}
 }
 
@@ -48,7 +48,7 @@ func (handler *GameserverManager) CreateRunConfiguration(definition *server.Game
 	return nil, errors.New("Not supported game type")
 }
 
-func (handler *GameserverManager) Endpoint(gameserver *server.Gameserver, state *common.GameserverState) (string, error) {
+func (handler *GameserverManager) Endpoint(gameserver *server.Gameserver, state *common.Gameserver) (string, error) {
 	for _, manager := range handler.managers {
 		if manager.metadata().Name == gameserver.Definition.Game {
 			return manager.endpoint(gameserver, state)

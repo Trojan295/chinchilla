@@ -1,5 +1,5 @@
-hash: 40ec3ec16b468da156d75d5c41a379d13e10362bec21bba0bcbc57c6b2be9b39
-updated: 2019-08-19T20:17:39.54364168+02:00
+hash: d30ede5a2b4f9835238baeeb65325dd76410e7838d164e26ecad9e7e107fbc82
+updated: 2019-09-30T20:18:21.947037803+02:00
 imports:
 - name: github.com/coreos/go-semver
   version: e214231b295a8ea9479f11b70b35d5acf3556d9b
@@ -36,13 +36,13 @@ imports:
 - name: github.com/satori/go.uuid
   version: f58768cc1a7a7e77a3bd49e98cdd21419399b6a3
 - name: github.com/Trojan295/chinchilla-common
-  version: 80f28f18c022cb104347fcfcdcda472fd7fb723d
+  version: 4a1a073ead5df02e1dea146770092bdaf7d2c364
 - name: github.com/ugorji/go
   version: e118e2d506a6b252f6b85f2e2f2ac1bfed82f1b8
   subpackages:
   - codec
 - name: go.etcd.io/etcd
-  version: 8f85f0dc2607fcfb3ec8d812ecf52eb391fb2f74
+  version: a14579fbfb1a000439a40abf71862df51b0a2136
   subpackages:
   - client
   - pkg/pathutil
@@ -74,7 +74,7 @@ imports:
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: 6eaf6f47437a6b4e2153a190160ef39a92c7eceb
+  version: f6d0f9ee430895e87ef1ceb5ac8f39725bafceef
   subpackages:
   - balancer
   - balancer/base

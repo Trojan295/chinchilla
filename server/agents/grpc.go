@@ -25,7 +25,7 @@ func (server AgentServiceServer) Register(ctx context.Context, agentState *commo
 }
 
 // GetGameServers func
-func (server AgentServiceServer) GetGameServers(ctx context.Context, req *common.GetGameserversRequest) (*common.GameserverList, error) {
+func (server AgentServiceServer) GetGameServers(ctx context.Context, req *common.GetGameserversRequest) (*common.GameserverRunConfigurationList, error) {
 	gameservers, err := getGameserversForAgent(req.Hostname, server.GameserverStore)
 	if err != nil {
 		log.Printf("AgentServiceServer GetGameServers error: %v", err)
@@ -37,7 +37,7 @@ func (server AgentServiceServer) GetGameServers(ctx context.Context, req *common
 		runConfigs = append(runConfigs, gs.RunConfiguration)
 	}
 
-	return &common.GameserverList{
+	return &common.GameserverRunConfigurationList{
 		Servers: runConfigs,
 	}, nil
 }
