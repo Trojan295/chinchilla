@@ -12,6 +12,25 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+type supportedGameserversResponse []supportedGameserverResponse
+
+type supportedGameserverResponse struct {
+	Name      string            `json:"name"`
+	Versions  []string          `json:"versions"`
+	Parameter map[string]string `json:"parameters"`
+}
+
+type listGameserverResponse struct {
+	UUID    string `json:"uuid"`
+	Name    string `json:"name"`
+	Game    string `json:"game"`
+	Version string `json:"version"`
+	Address string `json:"address"`
+	Status  string `json:"status"`
+}
+
+type listGameserversResponse []listGameserverResponse
+
 type gameserversAPI struct {
 	agentsStore       server.AgentStore
 	gameserverStore   server.GameserverStore
@@ -36,17 +55,19 @@ type gameserverCreate struct {
 	Parameters map[string]string `json:"parameters" binding:"required"`
 }
 
-type gameserverStatusResponse struct {
-	UUID    string `json:"uuid" binding:"required"`
-	Name    string `json:"name" binding:"required"`
-	Game    string `json:"game" binding:"required"`
-	Version string `json:"version" binding:"required"`
-	Address string `json:"address"`
-}
-
 func (api *gameserversAPI) getSupportedGameservers(c *gin.Context) {
 	metadata := api.gameserverManager.GetSupportedGameservers()
-	c.JSON(http.StatusOK, metadata)
+
+	res := supportedGameserversResponse{}
+	for _, gs := range metadata {
+		res = append(res, supportedGameserverResponse{
+			Name:      gs.Name,
+			Parameter: gs.Parameters,
+			Versions:  gs.Versions,
+		})
+	}
+
+	c.JSON(http.StatusOK, res)
 }
 
 func (api *gameserversAPI) createGameserver(c *gin.Context) {
@@ -93,7 +114,7 @@ func (api *gameserversAPI) listGameservers(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": err.Error()})
 	}
 
-	resp := make([]*gameserverStatusResponse, 0)
+	resp := listGameserversResponse{}
 	for _, gameserver := range gameservers {
 		if gameserver.Definition.Owner != userID {
 			continue
@@ -102,22 +123,25 @@ func (api *gameserversAPI) listGameservers(c *gin.Context) {
 		agentState, err := api.agentsStore.GetAgentState(gameserver.RunConfiguration.Agent)
 
 		var address string
+		status := "UNKNOWN"
 		if err != nil {
 			log.Printf("gameserversAPI GetAgentState error: %v", err)
 		} else {
 			for _, agentServer := range agentState.RunningGameservers {
 				if agentServer.UUID == gameserver.Definition.UUID {
+					status = string(agentServer.Status.String())
 					address, _ = api.gameserverManager.Endpoint(&gameserver, agentServer)
 				}
 			}
 		}
 
-		resp = append(resp, &gameserverStatusResponse{
-			Address: address,
-			Game:    gameserver.Definition.Game,
-			Name:    gameserver.Definition.Name,
+		resp = append(resp, listGameserverResponse{
 			UUID:    gameserver.Definition.UUID,
+			Name:    gameserver.Definition.Name,
+			Game:    gameserver.Definition.Game,
 			Version: gameserver.Definition.Version,
+			Address: address,
+			Status:  status,
 		})
 
 	}

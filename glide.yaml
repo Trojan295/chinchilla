@@ -20,3 +20,5 @@ import:
   - client
 - package: google.golang.org/grpc
   version: ^1.23.0
+- package: github.com/stretchr/testify
+  version: ^1.4.0
