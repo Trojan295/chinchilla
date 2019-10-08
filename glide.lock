@@ -1,5 +1,5 @@
-hash: 971a9ca763e4d8249c09bf397ffdcddd8f95c725240b8b934d17278972f4d947
-updated: 2019-10-08T18:22:03.767977606+02:00
+hash: 2d1ad6193271dee92a34d3241a880af0581bb2959a2c319028d3c28f376eec62
+updated: 2019-10-08T20:38:59.045426384+02:00
 imports:
 - name: github.com/coreos/go-semver
   version: e214231b295a8ea9479f11b70b35d5acf3556d9b
@@ -15,6 +15,10 @@ imports:
   - binding
   - internal/json
   - render
+- name: github.com/golang/mock
+  version: 9fa652df1129bef0e734c9cf9bf6dbae9ef3b9fa
+  subpackages:
+  - gomock
 - name: github.com/golang/protobuf
   version: 6c65a5562fc06764971b7c5d05c76c75e84bdbf7
   subpackages:
