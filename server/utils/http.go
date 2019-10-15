@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"testing"
-
 	"github.com/Trojan295/chinchilla-server/server/auth"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -17,7 +15,7 @@ func BuildToken(claims map[string]interface{}) string {
 }
 
 // SetupRouter func
-func SetupRouter(t *testing.T) *gin.Engine {
+func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(auth.JWTToken("secret"))
 	return r

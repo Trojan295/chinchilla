@@ -43,7 +43,7 @@ func TestListAgents(t *testing.T) {
 		},
 	}, nil).AnyTimes()
 
-	router := utils.SetupRouter(t)
+	router := utils.SetupRouter()
 	MountAgentsAPI(router, agentStore, gameserverStore)
 
 	claims := map[string]interface{}{
@@ -67,7 +67,7 @@ func TestListAgentsWhenNotAuthorized(t *testing.T) {
 	agentStore := mocks.NewMockAgentStore(ctrl)
 	gameserverStore := mocks.NewMockGameserverStore(ctrl)
 
-	router := utils.SetupRouter(t)
+	router := utils.SetupRouter()
 	MountAgentsAPI(router, agentStore, gameserverStore)
 
 	claims := map[string]interface{}{

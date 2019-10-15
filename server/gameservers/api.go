@@ -20,16 +20,18 @@ type supportedGameserverResponse struct {
 	Parameter map[string]string `json:"parameters"`
 }
 
-type listGameserverResponse struct {
-	UUID    string `json:"uuid"`
-	Name    string `json:"name"`
-	Game    string `json:"game"`
-	Version string `json:"version"`
-	Address string `json:"address"`
-	Status  string `json:"status"`
+type getGameserverResponse struct {
+	UUID    string  `json:"uuid"`
+	Name    string  `json:"name"`
+	Game    string  `json:"game"`
+	Version string  `json:"version"`
+	Address *string `json:"address"`
+	Status  string  `json:"status"`
 }
 
-type listGameserversResponse []listGameserverResponse
+type listGameserversResponse []getGameserverResponse
+
+type createGameserverResponse getGameserverResponse
 
 type gameserversAPI struct {
 	agentsStore       server.AgentStore
@@ -48,7 +50,7 @@ func MountGameserverAPI(r *gin.Engine, agStore server.AgentStore, gsStore server
 	group.DELETE("/:uuid/", auth.LoginRequired(), api.deleteGameserver)
 }
 
-type gameserverCreate struct {
+type createGameserverRequest struct {
 	Name       string            `json:"name" binding:"required"`
 	Game       string            `json:"game" binding:"required"`
 	Version    string            `json:"version" binding:"required"`
@@ -71,7 +73,7 @@ func (api *gameserversAPI) getSupportedGameservers(c *gin.Context) {
 }
 
 func (api *gameserversAPI) createGameserver(c *gin.Context) {
-	var body gameserverCreate
+	var body createGameserverRequest
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -103,7 +105,16 @@ func (api *gameserversAPI) createGameserver(c *gin.Context) {
 	gs.RunConfiguration.Agent = agents[idx].Hostname
 
 	api.gameserverStore.CreateGameserver(&gs)
-	c.JSON(http.StatusAccepted, gin.H{"status": "Order accepted"})
+
+	response := createGameserverResponse{
+		UUID:    gs.Definition.UUID,
+		Name:    gs.Definition.Name,
+		Game:    gs.Definition.Game,
+		Status:  "UNKNOWN",
+		Version: gs.Definition.Version,
+	}
+
+	c.JSON(http.StatusAccepted, response)
 }
 
 func (api *gameserversAPI) listGameservers(c *gin.Context) {
@@ -135,12 +146,12 @@ func (api *gameserversAPI) listGameservers(c *gin.Context) {
 			}
 		}
 
-		resp = append(resp, listGameserverResponse{
+		resp = append(resp, getGameserverResponse{
 			UUID:    gameserver.Definition.UUID,
 			Name:    gameserver.Definition.Name,
 			Game:    gameserver.Definition.Game,
 			Version: gameserver.Definition.Version,
-			Address: address,
+			Address: &address,
 			Status:  status,
 		})
 
@@ -151,11 +162,24 @@ func (api *gameserversAPI) listGameservers(c *gin.Context) {
 
 func (api *gameserversAPI) deleteGameserver(c *gin.Context) {
 	UUID := c.Param("uuid")
-	err := api.gameserverStore.DeleteGameserver(UUID)
+	userID := c.GetString("userID")
+
+	gameserver, err := api.gameserverStore.GetGameserver(UUID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{})
+		return
+	}
+
+	if gameserver.Definition.Owner != userID {
+		c.JSON(http.StatusNotFound, gin.H{})
+		return
+	}
+
+	err = api.gameserverStore.DeleteGameserver(UUID)
 	if err != nil {
 		log.Printf("gameserversAPI deleteGameserver error: %v", err)
 		c.JSON(http.StatusServiceUnavailable, "")
 		return
 	}
-	c.JSON(http.StatusAccepted, gin.H{"status": "Deleting"})
+	c.JSON(http.StatusAccepted, gin.H{})
 }
