@@ -15,6 +15,7 @@ import (
 	"github.com/Trojan295/chinchilla-server/server/gameservers"
 	"github.com/Trojan295/chinchilla-server/server/stores"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.etcd.io/etcd/client"
 	"google.golang.org/grpc"
 )
@@ -57,6 +58,8 @@ func setupRouter(etcd *stores.EtcdStore) *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"status": "OK"})
 	})
 
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
 	agents.MountAgentsAPI(r, etcd, etcd)
 	gameservers.MountGameserverAPI(r, etcd, etcd)
 
@@ -82,8 +85,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	go runGrpcServer(config, etcdStore)
+	server.StartMetrics(etcdStore)
 
 	r := setupRouter(etcdStore)
 
