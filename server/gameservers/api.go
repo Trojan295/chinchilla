@@ -14,10 +14,14 @@ import (
 
 type supportedGameserversResponse []supportedGameserverResponse
 
+type supportedGameserverOptions struct {
+	Version    string            `json:"version"`
+	Parameters map[string]string `json:"parameters"`
+}
+
 type supportedGameserverResponse struct {
-	Name      string            `json:"name"`
-	Versions  []string          `json:"versions"`
-	Parameter map[string]string `json:"parameters"`
+	Name    string                       `json:"name"`
+	Options []supportedGameserverOptions `json:"options"`
 }
 
 type getGameserverResponse struct {
@@ -62,10 +66,17 @@ func (api *gameserversAPI) getSupportedGameservers(c *gin.Context) {
 
 	res := supportedGameserversResponse{}
 	for _, gs := range metadata {
+		optionsRes := make([]supportedGameserverOptions, 0)
+		for _, option := range gs.Options {
+			optionsRes = append(optionsRes, supportedGameserverOptions{
+				Version:    option.Version,
+				Parameters: option.Parameters,
+			})
+		}
+
 		res = append(res, supportedGameserverResponse{
-			Name:      gs.Name,
-			Parameter: gs.Parameters,
-			Versions:  gs.Versions,
+			Name:    gs.Name,
+			Options: optionsRes,
 		})
 	}
 

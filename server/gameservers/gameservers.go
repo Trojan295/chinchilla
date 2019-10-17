@@ -7,10 +7,14 @@ import (
 	"github.com/Trojan295/chinchilla-server/server"
 )
 
-type GameserverMetadata struct {
-	Name       string
-	Versions   []string
+type GameserverOptions struct {
+	Version    string
 	Parameters map[string]string
+}
+
+type GameserverMetadata struct {
+	Name    string
+	Options []GameserverOptions
 }
 
 type gameserverManager interface {

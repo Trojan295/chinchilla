@@ -13,10 +13,20 @@ type minecraftGameserverManager struct {
 
 func (manager minecraftGameserverManager) metadata() GameserverMetadata {
 	return GameserverMetadata{
-		Name:     "Minecraft",
-		Versions: []string{"1.14.1", "1.13.2"},
-		Parameters: map[string]string{
-			"motd": "Motto of the Day",
+		Name: "Minecraft",
+		Options: []GameserverOptions{
+			GameserverOptions{
+				Version: "1.13.2",
+				Parameters: map[string]string{
+					"motd": "Motto of the Day",
+				},
+			},
+			GameserverOptions{
+				Version: "1.14.1",
+				Parameters: map[string]string{
+					"motd": "Motto of the Day",
+				},
+			},
 		},
 	}
 }

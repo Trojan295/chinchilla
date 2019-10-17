@@ -14,10 +14,20 @@ type factorioGameserverManager struct {
 
 func (manager factorioGameserverManager) metadata() GameserverMetadata {
 	return GameserverMetadata{
-		Name:     "Factorio",
-		Versions: []string{"0.17.63", "0.16.51"},
-		Parameters: map[string]string{
-			"description": "Description of the server",
+		Name: "Factorio",
+		Options: []GameserverOptions{
+			GameserverOptions{
+				Version: "0.16.51",
+				Parameters: map[string]string{
+					"description": "Description of the server",
+				},
+			},
+			GameserverOptions{
+				Version: "0.17.63",
+				Parameters: map[string]string{
+					"description": "Description of the server",
+				},
+			},
 		},
 	}
 }
