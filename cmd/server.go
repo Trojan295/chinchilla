@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	common "github.com/Trojan295/chinchilla-common"
+	"github.com/Trojan295/chinchilla-server/proto"
 	"github.com/Trojan295/chinchilla-server/server"
 	"github.com/Trojan295/chinchilla-server/server/agents"
 	"github.com/Trojan295/chinchilla-server/server/auth"
@@ -37,7 +37,7 @@ func runGrpcServer(config *server.Configuration, etcdStore *stores.EtcdStore) {
 	}
 
 	s := grpc.NewServer()
-	common.RegisterAgentServiceServer(s, NewAgentServiceServer(etcdStore))
+	proto.RegisterAgentServiceServer(s, NewAgentServiceServer(etcdStore))
 
 	log.Printf("Listening for gRPC on %s\n", port)
 	if err := s.Serve(lis); err != nil {

@@ -1,5 +1,5 @@
-hash: cda052cfb5c5e925cfabb0fdc19a09db13f5e9b6cae9f65c9d705d6a54bcc736
-updated: 2019-10-16T19:04:34.930932582+02:00
+hash: ce2194f218806f6cbe63495219277b83172a65deb9dab4bd560aec0ab3919230
+updated: 2019-10-28T23:17:37.567342808+01:00
 imports:
 - name: github.com/beorn7/perks
   version: 37c8de3658fcb183f997c4e13e8337516ab753e6
@@ -44,7 +44,7 @@ imports:
 - name: github.com/modern-go/reflect2
   version: 94122c33edd36123c84d5368cfb2b69df93a0ec8
 - name: github.com/pelletier/go-toml
-  version: 8fe62057ea2d46ce44254c98e84e810044dbe197
+  version: 903d9455db9ff1d7ac1ab199062eca7266dd11a3
 - name: github.com/prometheus/client_golang
   version: 170205fb58decfd011f1550d4cfb737230d7ae4f
   subpackages:
@@ -56,13 +56,13 @@ imports:
   subpackages:
   - go
 - name: github.com/prometheus/common
-  version: 287d3e634a1e550c9e463dd7e5a75a422c614505
+  version: b5fe7d854c42dc7842e48d1ca58f60feae09d77b
   subpackages:
   - expfmt
   - internal/bitbucket.org/ww/goautoneg
   - model
 - name: github.com/prometheus/procfs
-  version: 648defec548e893f87609e8a3daa1d82e8981221
+  version: 34c83637414974b5e7d4bd700b49de3c66631989
   subpackages:
   - internal/fs
   - internal/util
@@ -79,7 +79,7 @@ imports:
   subpackages:
   - codec
 - name: go.etcd.io/etcd
-  version: bbe86b066c0c714fa2a17ee93a37882553cf2394
+  version: 3cf2f69b5738fb702ba1a935590f36b52b18979b
   subpackages:
   - client
   - pkg/pathutil

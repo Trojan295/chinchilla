@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	common "github.com/Trojan295/chinchilla-common"
+	"github.com/Trojan295/chinchilla-server/proto"
 	"github.com/Trojan295/chinchilla-server/server"
 )
 
@@ -32,26 +32,26 @@ func (manager factorioGameserverManager) metadata() GameserverMetadata {
 	}
 }
 
-func (manager factorioGameserverManager) createRunConfiguration(definition *server.GameserverDefinition) (*common.GameserverRunConfiguration, error) {
-	envVars := []*common.EnvironmentVariable{}
+func (manager factorioGameserverManager) createRunConfiguration(definition *server.GameserverDefinition) (*proto.GameserverRunConfiguration, error) {
+	envVars := []*proto.EnvironmentVariable{}
 
 	for key, value := range definition.Parameters {
-		envVars = append(envVars, &common.EnvironmentVariable{
+		envVars = append(envVars, &proto.EnvironmentVariable{
 			Name:  fmt.Sprintf("CONFIG_%s", strings.ToUpper(key)),
 			Value: value,
 		})
 	}
 
-	return &common.GameserverRunConfiguration{
+	return &proto.GameserverRunConfiguration{
 		Name:  definition.Name,
 		UUID:  definition.UUID,
 		Image: fmt.Sprintf("factoriotools/factorio:%s", definition.Version),
-		ResourceRequirements: &common.ResourceRequirements{
+		ResourceRequirements: &proto.ResourceRequirements{
 			MemoryReservation: 512,
 		},
-		Ports: []*common.NetworkPort{
-			&common.NetworkPort{
-				Protocol:      common.NetworkProtocol_UDP,
+		Ports: []*proto.NetworkPort{
+			&proto.NetworkPort{
+				Protocol:      proto.NetworkProtocol_UDP,
 				ContainerPort: 34197,
 			},
 		},
@@ -59,10 +59,10 @@ func (manager factorioGameserverManager) createRunConfiguration(definition *serv
 	}, nil
 }
 
-func (manager factorioGameserverManager) endpoint(server *server.Gameserver, runningServer *common.Gameserver) (string, error) {
+func (manager factorioGameserverManager) endpoint(server *server.Gameserver, runningServer *proto.Gameserver) (string, error) {
 	if runningServer != nil {
 		for _, port := range runningServer.PortMappings {
-			if port.ContainerPort == 34197 && port.Protocol == common.NetworkProtocol_UDP {
+			if port.ContainerPort == 34197 && port.Protocol == proto.NetworkProtocol_UDP {
 				return fmt.Sprintf("%s:%d", server.RunConfiguration.Agent, port.HostPort), nil
 			}
 		}

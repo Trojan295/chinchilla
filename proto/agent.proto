@@ -1,0 +1,89 @@
+syntax = "proto3";
+package proto;
+
+service AgentService
+{
+    rpc Register(AgentState) returns (Empty);
+    rpc GetGameServers(GetGameserversRequest) returns (GameserverRunConfigurationList);
+}
+
+message Empty {}
+
+message AgentResources
+{
+    int32 cpus = 1;
+    int32 memory = 2;
+}
+
+message AgentResourceUsage { int32 memory = 2; }
+
+message AgentState
+{
+    string hostname = 1;
+    AgentResources resources = 2;
+    AgentResourceUsage resourceUsage = 3;
+    repeated Gameserver runningGameservers = 4;
+}
+
+message AgentResourceReservation { int32 memory = 2; }
+
+message ResourceRequirements
+{
+    int32 cpuReservation = 1;
+    int32 cpuLimit = 2;
+    int32 memoryReservation = 3;
+    int32 memoryLimit = 4;
+}
+
+enum NetworkProtocol {
+    TCP = 0;
+    UDP = 1;
+}
+
+message NetworkPort
+{
+    NetworkProtocol protocol = 1;
+    int32 containerPort = 2;
+}
+
+message NetworkPortMapping
+{
+    NetworkProtocol protocol = 1;
+    int32 containerPort = 2;
+    int32 hostPort = 3;
+}
+
+message EnvironmentVariable
+{
+    string name = 1;
+    string value = 2;
+}
+
+message GetGameserversRequest { string hostname = 1; }
+
+message GameserverRunConfigurationList { repeated GameserverRunConfiguration servers = 1; }
+
+message GameserverRunConfiguration
+{
+    string UUID = 1;
+    string name = 2;
+    string agent = 3;
+    string image = 4;
+    ResourceRequirements resourceRequirements = 5;
+    repeated NetworkPort ports = 6;
+    repeated EnvironmentVariable environment = 7;
+}
+
+enum GameserverStatus {
+    RUNNING = 0;
+    PENDING = 1;
+    ERROR = 2;
+}
+
+message Gameserver
+{
+    string UUID = 1;
+    GameserverStatus status = 2;
+    string info = 3;
+    repeated NetworkPortMapping portMappings = 4;
+}

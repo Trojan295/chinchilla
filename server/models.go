@@ -1,6 +1,6 @@
 package server
 
-import common "github.com/Trojan295/chinchilla-common"
+import "github.com/Trojan295/chinchilla-server/proto"
 
 // GameserverDefinition represents the receipe for the game server
 type GameserverDefinition struct {
@@ -15,14 +15,14 @@ type GameserverDefinition struct {
 // Gameserver glues GameserverDefinition and GameserverRunConfiguration
 type Gameserver struct {
 	Definition       GameserverDefinition
-	RunConfiguration *common.GameserverRunConfiguration
+	RunConfiguration *proto.GameserverRunConfiguration
 }
 
 // AgentStore is an interface for an agents storage
 type AgentStore interface {
-	RegisterAgent(*common.AgentState) error
-	ListAgents() ([]common.AgentState, error)
-	GetAgentState(UUID string) (*common.AgentState, error)
+	RegisterAgent(*proto.AgentState) error
+	ListAgents() ([]proto.AgentState, error)
+	GetAgentState(UUID string) (*proto.AgentState, error)
 }
 
 // GameserverStore interface

@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	common "github.com/Trojan295/chinchilla-common"
 	"github.com/Trojan295/chinchilla-server/mocks"
+	"github.com/Trojan295/chinchilla-server/proto"
 	"github.com/Trojan295/chinchilla-server/server"
 	"github.com/Trojan295/chinchilla-server/server/utils"
 	"github.com/golang/mock/gomock"
@@ -18,14 +18,14 @@ func TestListAgents(t *testing.T) {
 	defer ctrl.Finish()
 
 	agentStore := mocks.NewMockAgentStore(ctrl)
-	agentStore.EXPECT().ListAgents().Return([]common.AgentState{
-		common.AgentState{
+	agentStore.EXPECT().ListAgents().Return([]proto.AgentState{
+		proto.AgentState{
 			Hostname: "localhost",
-			Resources: &common.AgentResources{
+			Resources: &proto.AgentResources{
 				Cpus:   2,
 				Memory: 2024,
 			},
-			ResourceUsage: &common.AgentResourceUsage{
+			ResourceUsage: &proto.AgentResourceUsage{
 				Memory: 1024,
 			},
 		},
@@ -34,9 +34,9 @@ func TestListAgents(t *testing.T) {
 	gameserverStore := mocks.NewMockGameserverStore(ctrl)
 	gameserverStore.EXPECT().ListGameservers().Return([]server.Gameserver{
 		server.Gameserver{
-			RunConfiguration: &common.GameserverRunConfiguration{
+			RunConfiguration: &proto.GameserverRunConfiguration{
 				Agent: "localhost",
-				ResourceRequirements: &common.ResourceRequirements{
+				ResourceRequirements: &proto.ResourceRequirements{
 					MemoryReservation: 1024,
 				},
 			},

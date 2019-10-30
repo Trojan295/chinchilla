@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	common "github.com/Trojan295/chinchilla-common"
+	"github.com/Trojan295/chinchilla-server/proto"
 	"github.com/Trojan295/chinchilla-server/server"
 )
 
@@ -15,29 +15,29 @@ type AgentServiceServer struct {
 }
 
 // Register handles registration of a new agent
-func (server AgentServiceServer) Register(ctx context.Context, agentState *common.AgentState) (*common.Empty, error) {
+func (server AgentServiceServer) Register(ctx context.Context, agentState *proto.AgentState) (*proto.Empty, error) {
 	log.Printf("agentServiceServer Register: register agent %s",
 		agentState.Hostname)
 
 	err := server.AgentStore.RegisterAgent(agentState)
 
-	return &common.Empty{}, err
+	return &proto.Empty{}, err
 }
 
 // GetGameServers func
-func (server AgentServiceServer) GetGameServers(ctx context.Context, req *common.GetGameserversRequest) (*common.GameserverRunConfigurationList, error) {
+func (server AgentServiceServer) GetGameServers(ctx context.Context, req *proto.GetGameserversRequest) (*proto.GameserverRunConfigurationList, error) {
 	gameservers, err := getGameserversForAgent(req.Hostname, server.GameserverStore)
 	if err != nil {
 		log.Printf("AgentServiceServer GetGameServers error: %v", err)
 		return nil, err
 	}
 
-	runConfigs := make([]*common.GameserverRunConfiguration, 0, len(gameservers))
+	runConfigs := make([]*proto.GameserverRunConfiguration, 0, len(gameservers))
 	for _, gs := range gameservers {
 		runConfigs = append(runConfigs, gs.RunConfiguration)
 	}
 
-	return &common.GameserverRunConfigurationList{
+	return &proto.GameserverRunConfigurationList{
 		Servers: runConfigs,
 	}, nil
 }

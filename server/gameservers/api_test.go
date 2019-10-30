@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	common "github.com/Trojan295/chinchilla-common"
 	"github.com/Trojan295/chinchilla-server/mocks"
+	"github.com/Trojan295/chinchilla-server/proto"
 	"github.com/Trojan295/chinchilla-server/server"
 	"github.com/Trojan295/chinchilla-server/server/utils"
 	"github.com/golang/mock/gomock"
@@ -50,7 +50,7 @@ func TestListUserGameservers(t *testing.T) {
 	defer ctrl.Finish()
 
 	gameserver := server.Gameserver{
-		RunConfiguration: &common.GameserverRunConfiguration{
+		RunConfiguration: &proto.GameserverRunConfiguration{
 			Agent: "localhost",
 		},
 		Definition: server.GameserverDefinition{
@@ -62,7 +62,7 @@ func TestListUserGameservers(t *testing.T) {
 		},
 	}
 	otherGameserver := server.Gameserver{
-		RunConfiguration: &common.GameserverRunConfiguration{
+		RunConfiguration: &proto.GameserverRunConfiguration{
 			Agent: "localhost",
 		},
 		Definition: server.GameserverDefinition{
@@ -74,12 +74,12 @@ func TestListUserGameservers(t *testing.T) {
 		},
 	}
 
-	gameserverInstance := &common.Gameserver{
+	gameserverInstance := &proto.Gameserver{
 		UUID:   gameserver.Definition.UUID,
-		Status: common.GameserverStatus_RUNNING,
-		PortMappings: []*common.NetworkPortMapping{
-			&common.NetworkPortMapping{
-				Protocol:      common.NetworkProtocol_TCP,
+		Status: proto.GameserverStatus_RUNNING,
+		PortMappings: []*proto.NetworkPortMapping{
+			&proto.NetworkPortMapping{
+				Protocol:      proto.NetworkProtocol_TCP,
 				ContainerPort: 25565,
 				HostPort:      25565,
 			},
@@ -89,8 +89,8 @@ func TestListUserGameservers(t *testing.T) {
 	agentStore := mocks.NewMockAgentStore(ctrl)
 	agentStore.EXPECT().
 		GetAgentState("localhost").
-		Return(&common.AgentState{
-			RunningGameservers: []*common.Gameserver{gameserverInstance},
+		Return(&proto.AgentState{
+			RunningGameservers: []*proto.Gameserver{gameserverInstance},
 		}, nil).
 		AnyTimes()
 
@@ -133,8 +133,8 @@ func TestCreateNewServer(t *testing.T) {
 	agentStore := mocks.NewMockAgentStore(ctrl)
 	agentStore.EXPECT().
 		ListAgents().
-		Return([]common.AgentState{
-			common.AgentState{
+		Return([]proto.AgentState{
+			proto.AgentState{
 				Hostname: "localhost",
 			},
 		}, nil).

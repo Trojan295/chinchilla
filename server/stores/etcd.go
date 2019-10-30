@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	common "github.com/Trojan295/chinchilla-common"
+	chinchilla_proto "github.com/Trojan295/chinchilla-server/proto"
 	"github.com/Trojan295/chinchilla-server/server"
 	"github.com/golang/protobuf/proto"
 	"go.etcd.io/etcd/client"
@@ -41,7 +41,7 @@ func NewEtcdStore(config client.Config) (*EtcdStore, error) {
 }
 
 // RegisterAgent registers a new Agent
-func (store *EtcdStore) RegisterAgent(agent *common.AgentState) error {
+func (store *EtcdStore) RegisterAgent(agent *chinchilla_proto.AgentState) error {
 	value := proto.MarshalTextString(agent)
 
 	_, err := store.keysAPI.Set(
@@ -54,8 +54,8 @@ func (store *EtcdStore) RegisterAgent(agent *common.AgentState) error {
 }
 
 // ListAgents returns a AgentDetails list
-func (store *EtcdStore) ListAgents() ([]common.AgentState, error) {
-	agents := make([]common.AgentState, 0)
+func (store *EtcdStore) ListAgents() ([]chinchilla_proto.AgentState, error) {
+	agents := make([]chinchilla_proto.AgentState, 0)
 
 	agentsRes, err := store.keysAPI.Get(context.Background(), "/agents", nil)
 	if err != nil {
@@ -64,7 +64,7 @@ func (store *EtcdStore) ListAgents() ([]common.AgentState, error) {
 
 	for _, agentNode := range agentsRes.Node.Nodes {
 		detailsRes, _ := store.keysAPI.Get(context.Background(), fmt.Sprintf("%s/state", agentNode.Key), nil)
-		agentDetails := common.AgentState{}
+		agentDetails := chinchilla_proto.AgentState{}
 		proto.UnmarshalText(detailsRes.Node.Value, &agentDetails)
 		agents = append(agents, agentDetails)
 	}
@@ -72,13 +72,13 @@ func (store *EtcdStore) ListAgents() ([]common.AgentState, error) {
 }
 
 // GetAgentState func
-func (store *EtcdStore) GetAgentState(UUID string) (*common.AgentState, error) {
+func (store *EtcdStore) GetAgentState(UUID string) (*chinchilla_proto.AgentState, error) {
 	agentStateRes, err := store.keysAPI.Get(context.Background(), fmt.Sprintf("/agents/%s/state", UUID), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	agentState := &common.AgentState{}
+	agentState := &chinchilla_proto.AgentState{}
 	proto.UnmarshalText(agentStateRes.Node.Value, agentState)
 	return agentState, nil
 }

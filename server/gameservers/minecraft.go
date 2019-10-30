@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	common "github.com/Trojan295/chinchilla-common"
+	"github.com/Trojan295/chinchilla-server/proto"
 	"github.com/Trojan295/chinchilla-server/server"
 )
 
@@ -31,31 +31,31 @@ func (manager minecraftGameserverManager) metadata() GameserverMetadata {
 	}
 }
 
-func (manager minecraftGameserverManager) createRunConfiguration(definition *server.GameserverDefinition) (*common.GameserverRunConfiguration, error) {
-	envVars := []*common.EnvironmentVariable{
-		&common.EnvironmentVariable{
+func (manager minecraftGameserverManager) createRunConfiguration(definition *server.GameserverDefinition) (*proto.GameserverRunConfiguration, error) {
+	envVars := []*proto.EnvironmentVariable{
+		&proto.EnvironmentVariable{
 			Name:  "EULA",
 			Value: "TRUE",
 		},
 	}
 
 	if motd, ok := definition.Parameters["motd"]; ok {
-		envVars = append(envVars, &common.EnvironmentVariable{
+		envVars = append(envVars, &proto.EnvironmentVariable{
 			Name:  "MOTD",
 			Value: motd,
 		})
 	}
 
-	return &common.GameserverRunConfiguration{
+	return &proto.GameserverRunConfiguration{
 		Name:  definition.Name,
 		UUID:  definition.UUID,
 		Image: "itzg/minecraft-server",
-		ResourceRequirements: &common.ResourceRequirements{
+		ResourceRequirements: &proto.ResourceRequirements{
 			MemoryReservation: 1532,
 		},
-		Ports: []*common.NetworkPort{
-			&common.NetworkPort{
-				Protocol:      common.NetworkProtocol_TCP,
+		Ports: []*proto.NetworkPort{
+			&proto.NetworkPort{
+				Protocol:      proto.NetworkProtocol_TCP,
 				ContainerPort: 25565,
 			},
 		},
@@ -63,10 +63,10 @@ func (manager minecraftGameserverManager) createRunConfiguration(definition *ser
 	}, nil
 }
 
-func (manager minecraftGameserverManager) endpoint(gameserver *server.Gameserver, state *common.Gameserver) (string, error) {
+func (manager minecraftGameserverManager) endpoint(gameserver *server.Gameserver, state *proto.Gameserver) (string, error) {
 	if state != nil {
 		for _, port := range state.PortMappings {
-			if port.ContainerPort == 25565 && port.Protocol == common.NetworkProtocol_TCP {
+			if port.ContainerPort == 25565 && port.Protocol == proto.NetworkProtocol_TCP {
 				return fmt.Sprintf("%s:%d", gameserver.RunConfiguration.Agent, port.HostPort), nil
 			}
 		}

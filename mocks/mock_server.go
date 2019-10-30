@@ -5,7 +5,7 @@
 package mocks
 
 import (
-	chinchilla_common "github.com/Trojan295/chinchilla-common"
+	proto "github.com/Trojan295/chinchilla-server/proto"
 	server "github.com/Trojan295/chinchilla-server/server"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
@@ -35,10 +35,10 @@ func (m *MockAgentStore) EXPECT() *MockAgentStoreMockRecorder {
 }
 
 // GetAgentState mocks base method
-func (m *MockAgentStore) GetAgentState(arg0 string) (*chinchilla_common.AgentState, error) {
+func (m *MockAgentStore) GetAgentState(arg0 string) (*proto.AgentState, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAgentState", arg0)
-	ret0, _ := ret[0].(*chinchilla_common.AgentState)
+	ret0, _ := ret[0].(*proto.AgentState)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -50,10 +50,10 @@ func (mr *MockAgentStoreMockRecorder) GetAgentState(arg0 interface{}) *gomock.Ca
 }
 
 // ListAgents mocks base method
-func (m *MockAgentStore) ListAgents() ([]chinchilla_common.AgentState, error) {
+func (m *MockAgentStore) ListAgents() ([]proto.AgentState, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListAgents")
-	ret0, _ := ret[0].([]chinchilla_common.AgentState)
+	ret0, _ := ret[0].([]proto.AgentState)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -65,7 +65,7 @@ func (mr *MockAgentStoreMockRecorder) ListAgents() *gomock.Call {
 }
 
 // RegisterAgent mocks base method
-func (m *MockAgentStore) RegisterAgent(arg0 *chinchilla_common.AgentState) error {
+func (m *MockAgentStore) RegisterAgent(arg0 *proto.AgentState) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RegisterAgent", arg0)
 	ret0, _ := ret[0].(error)
