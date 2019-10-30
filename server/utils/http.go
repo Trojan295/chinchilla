@@ -17,6 +17,9 @@ func BuildToken(claims map[string]interface{}) string {
 // SetupRouter func
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
-	r.Use(auth.JWTToken("secret"))
+	auth.SetupAuthentication(r, map[string]interface{}{
+		"type": "jwt",
+		"key":  "secret",
+	})
 	return r
 }

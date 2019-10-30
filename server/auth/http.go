@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -8,8 +9,39 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SetupAuthentication registers the propert authentication
+// mechanism based on the Configuration
+func SetupAuthentication(router *gin.Engine, authConfig map[string]interface{}) {
+	if authConfig["type"] == "jwt" {
+		log.Println("Using JWT based authentication")
+
+		secret := authConfig["key"].(string)
+		router.Use(jwtToken(secret))
+	} else if authConfig["type"] == "header" {
+		log.Println("Using header based authentication")
+
+		router.Use(headerAuth)
+	} else {
+		panic("Wrong authentication config")
+	}
+}
+
+func headerAuth(c *gin.Context) {
+	userHeader := c.GetHeader("x-user")
+	if userHeader != "" {
+		c.Set("userID", userHeader)
+	}
+
+	permissionsHeader := c.GetHeader("x-permissions")
+	if permissionsHeader != "" {
+		permissions := strings.Split(permissionsHeader, ",")
+		c.Set("permissions", permissions)
+	}
+
+}
+
 // JWTToken is a gin middleware to validate JWT tokens
-func JWTToken(secret string) gin.HandlerFunc {
+func jwtToken(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("authorization")
 
@@ -27,8 +59,16 @@ func JWTToken(secret string) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("permissions", token.Claims.(jwt.MapClaims)["permissions"])
 		c.Set("userID", token.Claims.(jwt.MapClaims)["sub"])
+
+		if permissionsObj, ok := token.Claims.(jwt.MapClaims)["permissions"].([]interface{}); ok {
+			permissions := make([]string, 0)
+			for _, permission := range permissionsObj {
+				permissions = append(permissions, permission.(string))
+			}
+
+			c.Set("permissions", permissions)
+		}
 	}
 }
 
@@ -47,7 +87,7 @@ func LoginRequired() gin.HandlerFunc {
 func Auth0Permission(scope string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		permissionsObj, ok := c.Get("permissions")
-		permissions := permissionsObj.([]interface{})
+		permissions := permissionsObj.([]string)
 
 		if ok == false {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Missing scopes"})
@@ -56,7 +96,7 @@ func Auth0Permission(scope string) gin.HandlerFunc {
 
 		contains := false
 		for _, s := range permissions {
-			if scope == s.(string) {
+			if scope == s {
 				contains = true
 			}
 		}

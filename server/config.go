@@ -3,7 +3,7 @@ package server
 import (
 	"io/ioutil"
 
-	"github.com/pelletier/go-toml"
+	"github.com/BurntSushi/toml"
 )
 
 // Server configuration
@@ -18,6 +18,7 @@ type Etcd struct {
 
 // Configuration of agent
 type Configuration struct {
+	Auth   map[string]interface{}
 	Server Server
 	Etcd   Etcd
 }

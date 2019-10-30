@@ -5,7 +5,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/Trojan295/chinchilla-server/proto"
@@ -45,15 +44,7 @@ func runGrpcServer(config *server.Configuration, etcdStore *stores.EtcdStore) {
 	}
 }
 
-func setupRouter(etcd *stores.EtcdStore) *gin.Engine {
-	secret, ok := os.LookupEnv("AUTH0_KEY")
-	if !ok {
-		panic("Missing AUTH0_KEY variable")
-	}
-
-	r := gin.Default()
-	r.Use(auth.JWTToken(secret))
-
+func setupRouter(r *gin.Engine, etcd *stores.EtcdStore) {
 	r.GET("/health/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "OK"})
 	})
@@ -62,8 +53,6 @@ func setupRouter(etcd *stores.EtcdStore) *gin.Engine {
 
 	agents.MountAgentsAPI(r, etcd, etcd)
 	gameservers.MountGameserverAPI(r, etcd, etcd)
-
-	return r
 }
 
 var version string
@@ -88,7 +77,8 @@ func main() {
 	go runGrpcServer(config, etcdStore)
 	server.StartMetrics(etcdStore)
 
-	r := setupRouter(etcdStore)
-
+	r := gin.Default()
+	auth.SetupAuthentication(r, config.Auth)
+	setupRouter(r, etcdStore)
 	r.Run(":8080")
 }
