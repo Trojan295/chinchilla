@@ -1,9 +1,6 @@
 package gameservers
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/Trojan295/chinchilla-server/proto"
 	"github.com/Trojan295/chinchilla-server/server"
 )
@@ -31,7 +28,7 @@ func (manager minecraftGameserverManager) metadata() GameserverMetadata {
 	}
 }
 
-func (manager minecraftGameserverManager) createRunConfiguration(definition *server.GameserverDefinition) (*proto.GameserverRunConfiguration, error) {
+func (manager minecraftGameserverManager) createDeployment(definition *server.GameserverDefinition) (*proto.GameserverDeployment, error) {
 	envVars := []*proto.EnvironmentVariable{
 		&proto.EnvironmentVariable{
 			Name:  "EULA",
@@ -46,7 +43,7 @@ func (manager minecraftGameserverManager) createRunConfiguration(definition *ser
 		})
 	}
 
-	return &proto.GameserverRunConfiguration{
+	return &proto.GameserverDeployment{
 		Name:  definition.Name,
 		UUID:  definition.UUID,
 		Image: "itzg/minecraft-server",
@@ -61,15 +58,4 @@ func (manager minecraftGameserverManager) createRunConfiguration(definition *ser
 		},
 		Environment: envVars,
 	}, nil
-}
-
-func (manager minecraftGameserverManager) endpoint(gameserver *server.Gameserver, state *proto.Gameserver) (string, error) {
-	if state != nil {
-		for _, port := range state.PortMappings {
-			if port.ContainerPort == 25565 && port.Protocol == proto.NetworkProtocol_TCP {
-				return fmt.Sprintf("%s:%d", gameserver.RunConfiguration.Agent, port.HostPort), nil
-			}
-		}
-	}
-	return "", errors.New("Endpoint not ready")
 }

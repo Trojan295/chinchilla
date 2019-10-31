@@ -104,16 +104,16 @@ func (api *gameserversAPI) createGameserver(c *gin.Context) {
 		},
 	}
 
-	runConfig, err := api.gameserverManager.CreateRunConfiguration(&gs.Definition)
+	deployment, err := api.gameserverManager.CreateGameserverDeployment(&gs.Definition)
 	if err != nil {
 		c.JSON(http.StatusBadGateway, gin.H{"error": err})
 		return
 	}
-	gs.RunConfiguration = runConfig
+	gs.Deployment = deployment
 
 	agents, _ := api.agentsStore.ListAgents()
 	idx := rand.Intn(len(agents))
-	gs.RunConfiguration.Agent = agents[idx].Hostname
+	gs.Deployment.Agent = agents[idx].Hostname
 
 	api.gameserverStore.CreateGameserver(&gs)
 
@@ -142,7 +142,7 @@ func (api *gameserversAPI) listGameservers(c *gin.Context) {
 			continue
 		}
 
-		agentState, err := api.agentsStore.GetAgentState(gameserver.RunConfiguration.Agent)
+		agentState, err := api.agentsStore.GetAgentState(gameserver.Deployment.Agent)
 
 		var address string
 		status := "UNKNOWN"

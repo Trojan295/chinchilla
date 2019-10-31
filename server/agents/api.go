@@ -40,7 +40,7 @@ func (api *agentsAPI) getAgents(c *gin.Context) {
 		if err == nil {
 			acc := 0
 			for _, gs := range gameservers {
-				acc += int(gs.RunConfiguration.ResourceRequirements.MemoryReservation)
+				acc += int(gs.Deployment.ResourceRequirements.MemoryReservation)
 			}
 			reservedMemory = &acc
 		}

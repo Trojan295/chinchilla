@@ -2,7 +2,6 @@ package gameservers
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/Trojan295/chinchilla-server/proto"
 	"github.com/Trojan295/chinchilla-server/server"
@@ -63,5 +62,5 @@ func (handler *GameserverManager) Endpoint(gameserver *server.Gameserver, state 
 		return "", errors.New("Endpoint not ready")
 	}
 
-	return fmt.Sprintf("%s:%d", state.Endpoint.IpAddress, state.Endpoint.Port), nil
+	return state.Endpoint.IpAddress, nil
 }

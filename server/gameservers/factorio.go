@@ -31,7 +31,7 @@ func (manager factorioGameserverManager) metadata() GameserverMetadata {
 	}
 }
 
-func (manager factorioGameserverManager) createRunConfiguration(definition *server.GameserverDefinition) (*proto.GameserverRunConfiguration, error) {
+func (manager factorioGameserverManager) createDeployment(definition *server.GameserverDefinition) (*proto.GameserverDeployment, error) {
 	envVars := []*proto.EnvironmentVariable{}
 
 	for key, value := range definition.Parameters {
@@ -41,7 +41,7 @@ func (manager factorioGameserverManager) createRunConfiguration(definition *serv
 		})
 	}
 
-	return &proto.GameserverRunConfiguration{
+	return &proto.GameserverDeployment{
 		Name:  definition.Name,
 		UUID:  definition.UUID,
 		Image: fmt.Sprintf("factoriotools/factorio:%s", definition.Version),

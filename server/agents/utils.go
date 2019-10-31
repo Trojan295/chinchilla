@@ -12,7 +12,7 @@ func getGameserversForAgent(agentHostname string, store server.GameserverStore) 
 
 	agentGameservers := make([]server.Gameserver, 0)
 	for _, gs := range gameservers {
-		if gs.RunConfiguration.Agent == agentHostname {
+		if gs.Deployment.Agent == agentHostname {
 			agentGameservers = append(agentGameservers, gs)
 		}
 	}

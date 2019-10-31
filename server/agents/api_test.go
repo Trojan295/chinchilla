@@ -34,7 +34,7 @@ func TestListAgents(t *testing.T) {
 	gameserverStore := mocks.NewMockGameserverStore(ctrl)
 	gameserverStore.EXPECT().ListGameservers().Return([]server.Gameserver{
 		server.Gameserver{
-			RunConfiguration: &proto.GameserverRunConfiguration{
+			Deployment: &proto.GameserverDeployment{
 				Agent: "localhost",
 				ResourceRequirements: &proto.ResourceRequirements{
 					MemoryReservation: 1024,
