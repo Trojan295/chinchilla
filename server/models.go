@@ -12,10 +12,10 @@ type GameserverDefinition struct {
 	Parameters map[string]string
 }
 
-// Gameserver glues GameserverDefinition and GameserverRunConfiguration
+// Gameserver glues GameserverDefinition and GameserverDeployment
 type Gameserver struct {
-	Definition       GameserverDefinition
-	RunConfiguration *proto.GameserverRunConfiguration
+	Definition GameserverDefinition
+	Deployment *proto.GameserverDeployment
 }
 
 // AgentStore is an interface for an agents storage

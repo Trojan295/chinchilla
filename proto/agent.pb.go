@@ -6,12 +6,11 @@ package proto
 import (
 	context "context"
 	fmt "fmt"
-	math "math"
-
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -24,31 +23,6 @@ var _ = math.Inf
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
-
-type NetworkProtocol int32
-
-const (
-	NetworkProtocol_TCP NetworkProtocol = 0
-	NetworkProtocol_UDP NetworkProtocol = 1
-)
-
-var NetworkProtocol_name = map[int32]string{
-	0: "TCP",
-	1: "UDP",
-}
-
-var NetworkProtocol_value = map[string]int32{
-	"TCP": 0,
-	"UDP": 1,
-}
-
-func (x NetworkProtocol) String() string {
-	return proto.EnumName(NetworkProtocol_name, int32(x))
-}
-
-func (NetworkProtocol) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_dd830a99d5efef4e, []int{0}
-}
 
 type GameserverStatus int32
 
@@ -75,6 +49,31 @@ func (x GameserverStatus) String() string {
 }
 
 func (GameserverStatus) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_dd830a99d5efef4e, []int{0}
+}
+
+type NetworkProtocol int32
+
+const (
+	NetworkProtocol_TCP NetworkProtocol = 0
+	NetworkProtocol_UDP NetworkProtocol = 1
+)
+
+var NetworkProtocol_name = map[int32]string{
+	0: "TCP",
+	1: "UDP",
+}
+
+var NetworkProtocol_value = map[string]int32{
+	"TCP": 0,
+	"UDP": 1,
+}
+
+func (x NetworkProtocol) String() string {
+	return proto.EnumName(NetworkProtocol_name, int32(x))
+}
+
+func (NetworkProtocol) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_dd830a99d5efef4e, []int{1}
 }
 
@@ -258,43 +257,145 @@ func (m *AgentState) GetRunningGameservers() []*Gameserver {
 	return nil
 }
 
-type AgentResourceReservation struct {
-	Memory               int32    `protobuf:"varint,2,opt,name=memory,proto3" json:"memory,omitempty"`
+type Endpoint struct {
+	IpAddress            string   `protobuf:"bytes,1,opt,name=ipAddress,proto3" json:"ipAddress,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *AgentResourceReservation) Reset()         { *m = AgentResourceReservation{} }
-func (m *AgentResourceReservation) String() string { return proto.CompactTextString(m) }
-func (*AgentResourceReservation) ProtoMessage()    {}
-func (*AgentResourceReservation) Descriptor() ([]byte, []int) {
+func (m *Endpoint) Reset()         { *m = Endpoint{} }
+func (m *Endpoint) String() string { return proto.CompactTextString(m) }
+func (*Endpoint) ProtoMessage()    {}
+func (*Endpoint) Descriptor() ([]byte, []int) {
 	return fileDescriptor_dd830a99d5efef4e, []int{4}
 }
 
-func (m *AgentResourceReservation) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_AgentResourceReservation.Unmarshal(m, b)
+func (m *Endpoint) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Endpoint.Unmarshal(m, b)
 }
-func (m *AgentResourceReservation) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_AgentResourceReservation.Marshal(b, m, deterministic)
+func (m *Endpoint) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Endpoint.Marshal(b, m, deterministic)
 }
-func (m *AgentResourceReservation) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AgentResourceReservation.Merge(m, src)
+func (m *Endpoint) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Endpoint.Merge(m, src)
 }
-func (m *AgentResourceReservation) XXX_Size() int {
-	return xxx_messageInfo_AgentResourceReservation.Size(m)
+func (m *Endpoint) XXX_Size() int {
+	return xxx_messageInfo_Endpoint.Size(m)
 }
-func (m *AgentResourceReservation) XXX_DiscardUnknown() {
-	xxx_messageInfo_AgentResourceReservation.DiscardUnknown(m)
+func (m *Endpoint) XXX_DiscardUnknown() {
+	xxx_messageInfo_Endpoint.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AgentResourceReservation proto.InternalMessageInfo
+var xxx_messageInfo_Endpoint proto.InternalMessageInfo
 
-func (m *AgentResourceReservation) GetMemory() int32 {
+func (m *Endpoint) GetIpAddress() string {
 	if m != nil {
-		return m.Memory
+		return m.IpAddress
 	}
-	return 0
+	return ""
+}
+
+type Gameserver struct {
+	UUID                 string           `protobuf:"bytes,1,opt,name=UUID,proto3" json:"UUID,omitempty"`
+	Status               GameserverStatus `protobuf:"varint,2,opt,name=status,proto3,enum=proto.GameserverStatus" json:"status,omitempty"`
+	Info                 string           `protobuf:"bytes,3,opt,name=info,proto3" json:"info,omitempty"`
+	Endpoint             *Endpoint        `protobuf:"bytes,4,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *Gameserver) Reset()         { *m = Gameserver{} }
+func (m *Gameserver) String() string { return proto.CompactTextString(m) }
+func (*Gameserver) ProtoMessage()    {}
+func (*Gameserver) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dd830a99d5efef4e, []int{5}
+}
+
+func (m *Gameserver) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Gameserver.Unmarshal(m, b)
+}
+func (m *Gameserver) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Gameserver.Marshal(b, m, deterministic)
+}
+func (m *Gameserver) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Gameserver.Merge(m, src)
+}
+func (m *Gameserver) XXX_Size() int {
+	return xxx_messageInfo_Gameserver.Size(m)
+}
+func (m *Gameserver) XXX_DiscardUnknown() {
+	xxx_messageInfo_Gameserver.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Gameserver proto.InternalMessageInfo
+
+func (m *Gameserver) GetUUID() string {
+	if m != nil {
+		return m.UUID
+	}
+	return ""
+}
+
+func (m *Gameserver) GetStatus() GameserverStatus {
+	if m != nil {
+		return m.Status
+	}
+	return GameserverStatus_RUNNING
+}
+
+func (m *Gameserver) GetInfo() string {
+	if m != nil {
+		return m.Info
+	}
+	return ""
+}
+
+func (m *Gameserver) GetEndpoint() *Endpoint {
+	if m != nil {
+		return m.Endpoint
+	}
+	return nil
+}
+
+type GetGameserversRequest struct {
+	Hostname             string   `protobuf:"bytes,1,opt,name=hostname,proto3" json:"hostname,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetGameserversRequest) Reset()         { *m = GetGameserversRequest{} }
+func (m *GetGameserversRequest) String() string { return proto.CompactTextString(m) }
+func (*GetGameserversRequest) ProtoMessage()    {}
+func (*GetGameserversRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dd830a99d5efef4e, []int{6}
+}
+
+func (m *GetGameserversRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetGameserversRequest.Unmarshal(m, b)
+}
+func (m *GetGameserversRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetGameserversRequest.Marshal(b, m, deterministic)
+}
+func (m *GetGameserversRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetGameserversRequest.Merge(m, src)
+}
+func (m *GetGameserversRequest) XXX_Size() int {
+	return xxx_messageInfo_GetGameserversRequest.Size(m)
+}
+func (m *GetGameserversRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetGameserversRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetGameserversRequest proto.InternalMessageInfo
+
+func (m *GetGameserversRequest) GetHostname() string {
+	if m != nil {
+		return m.Hostname
+	}
+	return ""
 }
 
 type ResourceRequirements struct {
@@ -311,7 +412,7 @@ func (m *ResourceRequirements) Reset()         { *m = ResourceRequirements{} }
 func (m *ResourceRequirements) String() string { return proto.CompactTextString(m) }
 func (*ResourceRequirements) ProtoMessage()    {}
 func (*ResourceRequirements) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd830a99d5efef4e, []int{5}
+	return fileDescriptor_dd830a99d5efef4e, []int{7}
 }
 
 func (m *ResourceRequirements) XXX_Unmarshal(b []byte) error {
@@ -372,7 +473,7 @@ func (m *NetworkPort) Reset()         { *m = NetworkPort{} }
 func (m *NetworkPort) String() string { return proto.CompactTextString(m) }
 func (*NetworkPort) ProtoMessage()    {}
 func (*NetworkPort) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd830a99d5efef4e, []int{6}
+	return fileDescriptor_dd830a99d5efef4e, []int{8}
 }
 
 func (m *NetworkPort) XXX_Unmarshal(b []byte) error {
@@ -407,61 +508,6 @@ func (m *NetworkPort) GetContainerPort() int32 {
 	return 0
 }
 
-type NetworkPortMapping struct {
-	Protocol             NetworkProtocol `protobuf:"varint,1,opt,name=protocol,proto3,enum=proto.NetworkProtocol" json:"protocol,omitempty"`
-	ContainerPort        int32           `protobuf:"varint,2,opt,name=containerPort,proto3" json:"containerPort,omitempty"`
-	HostPort             int32           `protobuf:"varint,3,opt,name=hostPort,proto3" json:"hostPort,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_unrecognized     []byte          `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
-}
-
-func (m *NetworkPortMapping) Reset()         { *m = NetworkPortMapping{} }
-func (m *NetworkPortMapping) String() string { return proto.CompactTextString(m) }
-func (*NetworkPortMapping) ProtoMessage()    {}
-func (*NetworkPortMapping) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd830a99d5efef4e, []int{7}
-}
-
-func (m *NetworkPortMapping) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NetworkPortMapping.Unmarshal(m, b)
-}
-func (m *NetworkPortMapping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NetworkPortMapping.Marshal(b, m, deterministic)
-}
-func (m *NetworkPortMapping) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NetworkPortMapping.Merge(m, src)
-}
-func (m *NetworkPortMapping) XXX_Size() int {
-	return xxx_messageInfo_NetworkPortMapping.Size(m)
-}
-func (m *NetworkPortMapping) XXX_DiscardUnknown() {
-	xxx_messageInfo_NetworkPortMapping.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_NetworkPortMapping proto.InternalMessageInfo
-
-func (m *NetworkPortMapping) GetProtocol() NetworkProtocol {
-	if m != nil {
-		return m.Protocol
-	}
-	return NetworkProtocol_TCP
-}
-
-func (m *NetworkPortMapping) GetContainerPort() int32 {
-	if m != nil {
-		return m.ContainerPort
-	}
-	return 0
-}
-
-func (m *NetworkPortMapping) GetHostPort() int32 {
-	if m != nil {
-		return m.HostPort
-	}
-	return 0
-}
-
 type EnvironmentVariable struct {
 	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Value                string   `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
@@ -474,7 +520,7 @@ func (m *EnvironmentVariable) Reset()         { *m = EnvironmentVariable{} }
 func (m *EnvironmentVariable) String() string { return proto.CompactTextString(m) }
 func (*EnvironmentVariable) ProtoMessage()    {}
 func (*EnvironmentVariable) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd830a99d5efef4e, []int{8}
+	return fileDescriptor_dd830a99d5efef4e, []int{9}
 }
 
 func (m *EnvironmentVariable) XXX_Unmarshal(b []byte) error {
@@ -509,85 +555,7 @@ func (m *EnvironmentVariable) GetValue() string {
 	return ""
 }
 
-type GetGameserversRequest struct {
-	Hostname             string   `protobuf:"bytes,1,opt,name=hostname,proto3" json:"hostname,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *GetGameserversRequest) Reset()         { *m = GetGameserversRequest{} }
-func (m *GetGameserversRequest) String() string { return proto.CompactTextString(m) }
-func (*GetGameserversRequest) ProtoMessage()    {}
-func (*GetGameserversRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd830a99d5efef4e, []int{9}
-}
-
-func (m *GetGameserversRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetGameserversRequest.Unmarshal(m, b)
-}
-func (m *GetGameserversRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetGameserversRequest.Marshal(b, m, deterministic)
-}
-func (m *GetGameserversRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetGameserversRequest.Merge(m, src)
-}
-func (m *GetGameserversRequest) XXX_Size() int {
-	return xxx_messageInfo_GetGameserversRequest.Size(m)
-}
-func (m *GetGameserversRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetGameserversRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_GetGameserversRequest proto.InternalMessageInfo
-
-func (m *GetGameserversRequest) GetHostname() string {
-	if m != nil {
-		return m.Hostname
-	}
-	return ""
-}
-
-type GameserverRunConfigurationList struct {
-	Servers              []*GameserverRunConfiguration `protobuf:"bytes,1,rep,name=servers,proto3" json:"servers,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                      `json:"-"`
-	XXX_unrecognized     []byte                        `json:"-"`
-	XXX_sizecache        int32                         `json:"-"`
-}
-
-func (m *GameserverRunConfigurationList) Reset()         { *m = GameserverRunConfigurationList{} }
-func (m *GameserverRunConfigurationList) String() string { return proto.CompactTextString(m) }
-func (*GameserverRunConfigurationList) ProtoMessage()    {}
-func (*GameserverRunConfigurationList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd830a99d5efef4e, []int{10}
-}
-
-func (m *GameserverRunConfigurationList) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GameserverRunConfigurationList.Unmarshal(m, b)
-}
-func (m *GameserverRunConfigurationList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GameserverRunConfigurationList.Marshal(b, m, deterministic)
-}
-func (m *GameserverRunConfigurationList) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GameserverRunConfigurationList.Merge(m, src)
-}
-func (m *GameserverRunConfigurationList) XXX_Size() int {
-	return xxx_messageInfo_GameserverRunConfigurationList.Size(m)
-}
-func (m *GameserverRunConfigurationList) XXX_DiscardUnknown() {
-	xxx_messageInfo_GameserverRunConfigurationList.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_GameserverRunConfigurationList proto.InternalMessageInfo
-
-func (m *GameserverRunConfigurationList) GetServers() []*GameserverRunConfiguration {
-	if m != nil {
-		return m.Servers
-	}
-	return nil
-}
-
-type GameserverRunConfiguration struct {
+type GameserverDeployment struct {
 	UUID                 string                 `protobuf:"bytes,1,opt,name=UUID,proto3" json:"UUID,omitempty"`
 	Name                 string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Agent                string                 `protobuf:"bytes,3,opt,name=agent,proto3" json:"agent,omitempty"`
@@ -600,210 +568,184 @@ type GameserverRunConfiguration struct {
 	XXX_sizecache        int32                  `json:"-"`
 }
 
-func (m *GameserverRunConfiguration) Reset()         { *m = GameserverRunConfiguration{} }
-func (m *GameserverRunConfiguration) String() string { return proto.CompactTextString(m) }
-func (*GameserverRunConfiguration) ProtoMessage()    {}
-func (*GameserverRunConfiguration) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd830a99d5efef4e, []int{11}
+func (m *GameserverDeployment) Reset()         { *m = GameserverDeployment{} }
+func (m *GameserverDeployment) String() string { return proto.CompactTextString(m) }
+func (*GameserverDeployment) ProtoMessage()    {}
+func (*GameserverDeployment) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dd830a99d5efef4e, []int{10}
 }
 
-func (m *GameserverRunConfiguration) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GameserverRunConfiguration.Unmarshal(m, b)
+func (m *GameserverDeployment) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GameserverDeployment.Unmarshal(m, b)
 }
-func (m *GameserverRunConfiguration) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GameserverRunConfiguration.Marshal(b, m, deterministic)
+func (m *GameserverDeployment) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GameserverDeployment.Marshal(b, m, deterministic)
 }
-func (m *GameserverRunConfiguration) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GameserverRunConfiguration.Merge(m, src)
+func (m *GameserverDeployment) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GameserverDeployment.Merge(m, src)
 }
-func (m *GameserverRunConfiguration) XXX_Size() int {
-	return xxx_messageInfo_GameserverRunConfiguration.Size(m)
+func (m *GameserverDeployment) XXX_Size() int {
+	return xxx_messageInfo_GameserverDeployment.Size(m)
 }
-func (m *GameserverRunConfiguration) XXX_DiscardUnknown() {
-	xxx_messageInfo_GameserverRunConfiguration.DiscardUnknown(m)
+func (m *GameserverDeployment) XXX_DiscardUnknown() {
+	xxx_messageInfo_GameserverDeployment.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GameserverRunConfiguration proto.InternalMessageInfo
+var xxx_messageInfo_GameserverDeployment proto.InternalMessageInfo
 
-func (m *GameserverRunConfiguration) GetUUID() string {
+func (m *GameserverDeployment) GetUUID() string {
 	if m != nil {
 		return m.UUID
 	}
 	return ""
 }
 
-func (m *GameserverRunConfiguration) GetName() string {
+func (m *GameserverDeployment) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *GameserverRunConfiguration) GetAgent() string {
+func (m *GameserverDeployment) GetAgent() string {
 	if m != nil {
 		return m.Agent
 	}
 	return ""
 }
 
-func (m *GameserverRunConfiguration) GetImage() string {
+func (m *GameserverDeployment) GetImage() string {
 	if m != nil {
 		return m.Image
 	}
 	return ""
 }
 
-func (m *GameserverRunConfiguration) GetResourceRequirements() *ResourceRequirements {
+func (m *GameserverDeployment) GetResourceRequirements() *ResourceRequirements {
 	if m != nil {
 		return m.ResourceRequirements
 	}
 	return nil
 }
 
-func (m *GameserverRunConfiguration) GetPorts() []*NetworkPort {
+func (m *GameserverDeployment) GetPorts() []*NetworkPort {
 	if m != nil {
 		return m.Ports
 	}
 	return nil
 }
 
-func (m *GameserverRunConfiguration) GetEnvironment() []*EnvironmentVariable {
+func (m *GameserverDeployment) GetEnvironment() []*EnvironmentVariable {
 	if m != nil {
 		return m.Environment
 	}
 	return nil
 }
 
-type Gameserver struct {
-	UUID                 string                `protobuf:"bytes,1,opt,name=UUID,proto3" json:"UUID,omitempty"`
-	Status               GameserverStatus      `protobuf:"varint,2,opt,name=status,proto3,enum=proto.GameserverStatus" json:"status,omitempty"`
-	Info                 string                `protobuf:"bytes,3,opt,name=info,proto3" json:"info,omitempty"`
-	PortMappings         []*NetworkPortMapping `protobuf:"bytes,4,rep,name=portMappings,proto3" json:"portMappings,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
+type GetGameserversResponse struct {
+	Servers              []*GameserverDeployment `protobuf:"bytes,1,rep,name=servers,proto3" json:"servers,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
+	XXX_unrecognized     []byte                  `json:"-"`
+	XXX_sizecache        int32                   `json:"-"`
 }
 
-func (m *Gameserver) Reset()         { *m = Gameserver{} }
-func (m *Gameserver) String() string { return proto.CompactTextString(m) }
-func (*Gameserver) ProtoMessage()    {}
-func (*Gameserver) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd830a99d5efef4e, []int{12}
+func (m *GetGameserversResponse) Reset()         { *m = GetGameserversResponse{} }
+func (m *GetGameserversResponse) String() string { return proto.CompactTextString(m) }
+func (*GetGameserversResponse) ProtoMessage()    {}
+func (*GetGameserversResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dd830a99d5efef4e, []int{11}
 }
 
-func (m *Gameserver) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Gameserver.Unmarshal(m, b)
+func (m *GetGameserversResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetGameserversResponse.Unmarshal(m, b)
 }
-func (m *Gameserver) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Gameserver.Marshal(b, m, deterministic)
+func (m *GetGameserversResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetGameserversResponse.Marshal(b, m, deterministic)
 }
-func (m *Gameserver) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Gameserver.Merge(m, src)
+func (m *GetGameserversResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetGameserversResponse.Merge(m, src)
 }
-func (m *Gameserver) XXX_Size() int {
-	return xxx_messageInfo_Gameserver.Size(m)
+func (m *GetGameserversResponse) XXX_Size() int {
+	return xxx_messageInfo_GetGameserversResponse.Size(m)
 }
-func (m *Gameserver) XXX_DiscardUnknown() {
-	xxx_messageInfo_Gameserver.DiscardUnknown(m)
+func (m *GetGameserversResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetGameserversResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Gameserver proto.InternalMessageInfo
+var xxx_messageInfo_GetGameserversResponse proto.InternalMessageInfo
 
-func (m *Gameserver) GetUUID() string {
+func (m *GetGameserversResponse) GetServers() []*GameserverDeployment {
 	if m != nil {
-		return m.UUID
-	}
-	return ""
-}
-
-func (m *Gameserver) GetStatus() GameserverStatus {
-	if m != nil {
-		return m.Status
-	}
-	return GameserverStatus_RUNNING
-}
-
-func (m *Gameserver) GetInfo() string {
-	if m != nil {
-		return m.Info
-	}
-	return ""
-}
-
-func (m *Gameserver) GetPortMappings() []*NetworkPortMapping {
-	if m != nil {
-		return m.PortMappings
+		return m.Servers
 	}
 	return nil
 }
 
 func init() {
-	proto.RegisterEnum("proto.NetworkProtocol", NetworkProtocol_name, NetworkProtocol_value)
 	proto.RegisterEnum("proto.GameserverStatus", GameserverStatus_name, GameserverStatus_value)
+	proto.RegisterEnum("proto.NetworkProtocol", NetworkProtocol_name, NetworkProtocol_value)
 	proto.RegisterType((*Empty)(nil), "proto.Empty")
 	proto.RegisterType((*AgentResources)(nil), "proto.AgentResources")
 	proto.RegisterType((*AgentResourceUsage)(nil), "proto.AgentResourceUsage")
 	proto.RegisterType((*AgentState)(nil), "proto.AgentState")
-	proto.RegisterType((*AgentResourceReservation)(nil), "proto.AgentResourceReservation")
+	proto.RegisterType((*Endpoint)(nil), "proto.Endpoint")
+	proto.RegisterType((*Gameserver)(nil), "proto.Gameserver")
+	proto.RegisterType((*GetGameserversRequest)(nil), "proto.GetGameserversRequest")
 	proto.RegisterType((*ResourceRequirements)(nil), "proto.ResourceRequirements")
 	proto.RegisterType((*NetworkPort)(nil), "proto.NetworkPort")
-	proto.RegisterType((*NetworkPortMapping)(nil), "proto.NetworkPortMapping")
 	proto.RegisterType((*EnvironmentVariable)(nil), "proto.EnvironmentVariable")
-	proto.RegisterType((*GetGameserversRequest)(nil), "proto.GetGameserversRequest")
-	proto.RegisterType((*GameserverRunConfigurationList)(nil), "proto.GameserverRunConfigurationList")
-	proto.RegisterType((*GameserverRunConfiguration)(nil), "proto.GameserverRunConfiguration")
-	proto.RegisterType((*Gameserver)(nil), "proto.Gameserver")
+	proto.RegisterType((*GameserverDeployment)(nil), "proto.GameserverDeployment")
+	proto.RegisterType((*GetGameserversResponse)(nil), "proto.GetGameserversResponse")
 }
 
 func init() { proto.RegisterFile("proto/agent.proto", fileDescriptor_dd830a99d5efef4e) }
 
 var fileDescriptor_dd830a99d5efef4e = []byte{
-	// 718 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0xcd, 0x4e, 0xdb, 0x4e,
-	0x10, 0xc7, 0xf9, 0x24, 0x13, 0xc8, 0x3f, 0x99, 0x3f, 0x50, 0x93, 0x56, 0x15, 0x75, 0x3f, 0x84,
-	0x28, 0x02, 0x29, 0x1c, 0x7a, 0x28, 0x15, 0x42, 0x10, 0x21, 0x24, 0x1a, 0xa2, 0xa5, 0xe9, 0xad,
-	0x07, 0x13, 0x2d, 0xa9, 0x55, 0xbc, 0xeb, 0xae, 0xd7, 0xa9, 0x78, 0x85, 0x1e, 0xfb, 0x0c, 0xbd,
-	0xb4, 0x6f, 0xd5, 0x37, 0xa9, 0x76, 0x6c, 0x27, 0x4e, 0x62, 0xda, 0x53, 0x4f, 0xde, 0x99, 0xfd,
-	0xed, 0x7c, 0xfe, 0x66, 0x0c, 0xad, 0x40, 0x49, 0x2d, 0xf7, 0xdd, 0x11, 0x17, 0x7a, 0x8f, 0xce,
-	0x58, 0xa6, 0x8f, 0x53, 0x85, 0x72, 0xd7, 0x0f, 0xf4, 0x9d, 0x73, 0x08, 0x8d, 0x63, 0x73, 0xcd,
-	0x78, 0x28, 0x23, 0x35, 0xe4, 0x21, 0x22, 0x94, 0x86, 0x41, 0x14, 0xda, 0xd6, 0x96, 0xb5, 0x5d,
-	0x66, 0x74, 0xc6, 0x0d, 0xa8, 0xf8, 0xdc, 0x97, 0xea, 0xce, 0x2e, 0x90, 0x36, 0x91, 0x9c, 0x5d,
-	0xc0, 0x99, 0xd7, 0x83, 0xd0, 0x1d, 0xf1, 0x7b, 0xd1, 0xbf, 0x2c, 0x00, 0x82, 0x5f, 0x69, 0x57,
-	0x73, 0x6c, 0xc3, 0xf2, 0x47, 0x19, 0x6a, 0xe1, 0xfa, 0x9c, 0x9c, 0xd5, 0xd8, 0x44, 0xc6, 0x03,
-	0xa8, 0xa9, 0x34, 0x22, 0xb2, 0x52, 0xef, 0xac, 0xc7, 0x19, 0xec, 0xcd, 0x86, 0xcb, 0xa6, 0x38,
-	0x3c, 0x82, 0x55, 0x95, 0x0d, 0xc4, 0x2e, 0xd2, 0xc3, 0xcd, 0xbc, 0x87, 0x04, 0x60, 0xb3, 0x78,
-	0x3c, 0x06, 0x54, 0x91, 0x10, 0x9e, 0x18, 0x9d, 0xb9, 0x3e, 0x0f, 0xb9, 0x1a, 0x73, 0x15, 0xda,
-	0xa5, 0xad, 0xe2, 0x76, 0xbd, 0xd3, 0x4a, 0xac, 0x4c, 0x6f, 0x58, 0x0e, 0xd8, 0xe9, 0x80, 0x3d,
-	0xe3, 0x87, 0xd1, 0x8d, 0xab, 0x3d, 0x29, 0xee, 0xad, 0xcb, 0x4f, 0x0b, 0xd6, 0xa6, 0xf8, 0xcf,
-	0x91, 0xa7, 0xb8, 0xcf, 0x85, 0x0e, 0xf1, 0x05, 0x34, 0x86, 0x41, 0x94, 0x31, 0x91, 0x34, 0x65,
-	0x4e, 0x6b, 0x2a, 0x39, 0x0c, 0xa2, 0x0b, 0xcf, 0xf7, 0x74, 0x62, 0x7a, 0x22, 0xe3, 0x2e, 0xb4,
-	0x62, 0x37, 0x59, 0x33, 0x45, 0x02, 0x2d, 0x5e, 0xe0, 0x16, 0xd4, 0x63, 0x65, 0x6c, 0xac, 0x44,
-	0xb8, 0xac, 0xca, 0x19, 0x41, 0xbd, 0xc7, 0xf5, 0x17, 0xa9, 0x3e, 0xf5, 0xa5, 0xd2, 0xd8, 0x81,
-	0x65, 0xaa, 0xcb, 0x50, 0xde, 0x52, 0x70, 0x8d, 0xce, 0x46, 0x52, 0xa8, 0x14, 0x95, 0xdc, 0xb2,
-	0x09, 0x0e, 0x9f, 0xc1, 0xea, 0x50, 0x0a, 0xed, 0x7a, 0x82, 0x2b, 0x63, 0x24, 0x89, 0x79, 0x56,
-	0xe9, 0x7c, 0xb5, 0x00, 0x33, 0x9e, 0xde, 0xba, 0x41, 0xe0, 0x89, 0xd1, 0xbf, 0x73, 0x98, 0xf2,
-	0x91, 0x00, 0x71, 0x81, 0x26, 0xb2, 0x73, 0x04, 0xff, 0x77, 0xc5, 0xd8, 0x53, 0x52, 0x98, 0xce,
-	0xbc, 0x77, 0x95, 0xe7, 0x5e, 0xdf, 0x72, 0x33, 0x2b, 0x19, 0xfa, 0xd2, 0x19, 0xd7, 0xa0, 0x3c,
-	0x76, 0x6f, 0x23, 0x4e, 0x4e, 0x6a, 0x2c, 0x16, 0x9c, 0x03, 0x58, 0x3f, 0xe3, 0x3a, 0xc3, 0x14,
-	0xd3, 0x68, 0x1e, 0xea, 0x3f, 0x4d, 0x81, 0xf3, 0x01, 0x1e, 0x67, 0xe8, 0x16, 0x89, 0x13, 0x29,
-	0x6e, 0xbc, 0x51, 0xa4, 0xa8, 0x57, 0x17, 0x5e, 0xa8, 0xf1, 0x35, 0x54, 0x53, 0x9a, 0x5a, 0x44,
-	0xd3, 0x27, 0x8b, 0x34, 0x9d, 0x7b, 0xc7, 0xd2, 0x17, 0xce, 0x8f, 0x02, 0xb4, 0xef, 0xc7, 0x99,
-	0xe4, 0x06, 0x83, 0xf3, 0xd3, 0x34, 0x39, 0x73, 0x9e, 0x24, 0x5c, 0x98, 0x4d, 0x98, 0x36, 0x0c,
-	0x15, 0xad, 0xc6, 0x62, 0xc1, 0x68, 0x3d, 0xdf, 0x0c, 0x61, 0x29, 0xd6, 0x92, 0x80, 0x97, 0xb0,
-	0xa6, 0x72, 0x98, 0x6e, 0x97, 0x69, 0x52, 0x1f, 0x26, 0xc1, 0xe7, 0x0d, 0x03, 0xcb, 0x7d, 0x88,
-	0xdb, 0x50, 0x0e, 0xa4, 0xd2, 0xa1, 0x5d, 0xa1, 0xf4, 0x71, 0x8e, 0x0b, 0x52, 0x69, 0x16, 0x03,
-	0xf0, 0x10, 0xea, 0x7c, 0xda, 0x42, 0xbb, 0x4a, 0xf8, 0x76, 0x82, 0xcf, 0x69, 0x2e, 0xcb, 0xc2,
-	0x9d, 0xef, 0x16, 0xc0, 0xb4, 0x56, 0xb9, 0xb5, 0xd9, 0x87, 0x4a, 0xa8, 0x5d, 0x1d, 0xc5, 0x0b,
-	0xab, 0xd1, 0x79, 0xb0, 0xd0, 0x8a, 0x2b, 0xba, 0x66, 0x09, 0xcc, 0x18, 0xf1, 0xc4, 0x8d, 0x4c,
-	0xea, 0x46, 0x67, 0x7c, 0x03, 0x2b, 0xc1, 0x94, 0xed, 0xe9, 0xf2, 0xd9, 0x5c, 0x4c, 0x2b, 0x41,
-	0xb0, 0x19, 0xf8, 0xce, 0x53, 0xf8, 0x6f, 0x6e, 0x0c, 0xb0, 0x0a, 0xc5, 0x77, 0x27, 0xfd, 0xe6,
-	0x92, 0x39, 0x0c, 0x4e, 0xfb, 0x4d, 0x6b, 0xe7, 0x15, 0x34, 0xe7, 0x63, 0xc2, 0x3a, 0x54, 0xd9,
-	0xa0, 0xd7, 0x3b, 0xef, 0x9d, 0x35, 0x97, 0x8c, 0xd0, 0xef, 0xf6, 0x4e, 0x8d, 0x60, 0x61, 0x0d,
-	0xca, 0x5d, 0xc6, 0x2e, 0x59, 0xb3, 0xd0, 0xf9, 0x66, 0xc1, 0x4a, 0xbc, 0xc0, 0xb9, 0x1a, 0x7b,
-	0x43, 0x8e, 0x2f, 0x61, 0x99, 0xf1, 0x91, 0x17, 0x6a, 0xae, 0xb0, 0x95, 0x5d, 0xb3, 0xb4, 0xe1,
-	0xdb, 0x2b, 0x69, 0x75, 0xcd, 0xaf, 0x06, 0x07, 0xd0, 0x48, 0x46, 0xe0, 0x2a, 0x26, 0x20, 0x3e,
-	0x4a, 0x2b, 0x94, 0x37, 0x19, 0xed, 0xe7, 0x7f, 0xa5, 0xb2, 0x19, 0x81, 0xeb, 0x0a, 0xa1, 0x0e,
-	0x7e, 0x07, 0x00, 0x00, 0xff, 0xff, 0x3d, 0x61, 0x7f, 0x72, 0xed, 0x06, 0x00, 0x00,
+	// 701 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x54, 0xdb, 0x6e, 0xd3, 0x4c,
+	0x10, 0xae, 0x73, 0xce, 0xa4, 0x4d, 0x93, 0xf9, 0xd3, 0xfe, 0x26, 0x2d, 0x52, 0x65, 0x10, 0x8a,
+	0x4a, 0xd5, 0x4a, 0xa9, 0x10, 0x37, 0x95, 0xaa, 0x8a, 0x44, 0x55, 0x25, 0x48, 0xa3, 0x2d, 0xe1,
+	0xde, 0x4d, 0x97, 0x60, 0x11, 0xef, 0x9a, 0xdd, 0x75, 0x50, 0x5f, 0x81, 0x4b, 0x5e, 0x81, 0x3b,
+	0xde, 0x8a, 0x37, 0x41, 0xbb, 0x5e, 0xe7, 0xe8, 0x72, 0xe5, 0x39, 0x7c, 0xfb, 0x79, 0xe6, 0xdb,
+	0x99, 0x85, 0x66, 0x24, 0xb8, 0xe2, 0x67, 0xfe, 0x84, 0x32, 0x75, 0x6a, 0x6c, 0x2c, 0x9a, 0x8f,
+	0x57, 0x86, 0x62, 0x3f, 0x8c, 0xd4, 0xa3, 0x77, 0x01, 0xf5, 0x2b, 0x9d, 0x26, 0x54, 0xf2, 0x58,
+	0x8c, 0xa9, 0x44, 0x84, 0xc2, 0x38, 0x8a, 0xa5, 0xeb, 0x1c, 0x39, 0x9d, 0x22, 0x31, 0x36, 0xee,
+	0x43, 0x29, 0xa4, 0x21, 0x17, 0x8f, 0x6e, 0xce, 0x44, 0xad, 0xe7, 0x9d, 0x00, 0xae, 0x9c, 0x1e,
+	0x49, 0x7f, 0x42, 0x9f, 0x44, 0xff, 0x71, 0x00, 0x0c, 0xfc, 0x4e, 0xf9, 0x8a, 0x62, 0x1b, 0x2a,
+	0x5f, 0xb8, 0x54, 0xcc, 0x0f, 0xa9, 0xf9, 0x59, 0x95, 0xcc, 0x7d, 0x3c, 0x87, 0xaa, 0x48, 0x2b,
+	0x32, 0x2c, 0xb5, 0xee, 0x5e, 0xd2, 0xc1, 0xe9, 0x6a, 0xb9, 0x64, 0x81, 0xc3, 0x4b, 0xd8, 0x11,
+	0xcb, 0x85, 0xb8, 0x79, 0x73, 0xf0, 0x59, 0xd6, 0x41, 0x03, 0x20, 0xab, 0x78, 0xbc, 0x02, 0x14,
+	0x31, 0x63, 0x01, 0x9b, 0x5c, 0xfb, 0x21, 0x95, 0x54, 0xcc, 0xa8, 0x90, 0x6e, 0xe1, 0x28, 0xdf,
+	0xa9, 0x75, 0x9b, 0x96, 0x65, 0x91, 0x21, 0x19, 0x60, 0xaf, 0x03, 0x95, 0x3e, 0x7b, 0x88, 0x78,
+	0xc0, 0x14, 0x1e, 0x42, 0x35, 0x88, 0xae, 0x1e, 0x1e, 0x04, 0x95, 0xd2, 0x76, 0xb8, 0x08, 0x78,
+	0x3f, 0x1d, 0x80, 0xc5, 0x49, 0x2d, 0xfb, 0x68, 0x74, 0xd3, 0xb3, 0x38, 0x63, 0xe3, 0x19, 0x94,
+	0xa4, 0xf2, 0x55, 0x9c, 0x48, 0x50, 0xef, 0xfe, 0xbf, 0x51, 0xc3, 0x9d, 0x49, 0x13, 0x0b, 0xd3,
+	0x24, 0x01, 0xfb, 0xcc, 0x4d, 0xe3, 0x55, 0x62, 0x6c, 0x7c, 0x0d, 0x15, 0x6a, 0x2b, 0x72, 0x0b,
+	0x46, 0x90, 0x5d, 0x4b, 0x93, 0x16, 0x4a, 0xe6, 0x00, 0xef, 0x1c, 0xf6, 0xae, 0xa9, 0x5a, 0x6a,
+	0x88, 0xd0, 0x6f, 0x31, 0x95, 0xea, 0x5f, 0x97, 0xe5, 0xfd, 0x76, 0xa0, 0x95, 0xea, 0xaa, 0xf1,
+	0x81, 0xa0, 0x21, 0x65, 0x4a, 0xe2, 0x2b, 0xa8, 0x8f, 0xa3, 0x98, 0x18, 0x2e, 0x5f, 0x05, 0x9c,
+	0xd9, 0xa1, 0x5a, 0x8b, 0x6a, 0xf2, 0x71, 0x14, 0xbf, 0x0f, 0xc2, 0x40, 0xd9, 0x91, 0x99, 0xfb,
+	0x78, 0x02, 0xcd, 0x64, 0x7c, 0x96, 0x69, 0xf2, 0x06, 0xb4, 0x99, 0xc0, 0x23, 0xa8, 0x25, 0xc1,
+	0x84, 0xac, 0x60, 0x70, 0xcb, 0x21, 0x6f, 0x02, 0xb5, 0x01, 0x55, 0xdf, 0xb9, 0xf8, 0x3a, 0xe4,
+	0x42, 0x61, 0x17, 0x2a, 0x46, 0x8c, 0x31, 0x9f, 0x9a, 0xe2, 0xea, 0xdd, 0x7d, 0xab, 0x4e, 0x8a,
+	0xb2, 0x59, 0x32, 0xc7, 0xe1, 0x4b, 0xd8, 0x19, 0x73, 0xa6, 0xfc, 0x80, 0x51, 0xa1, 0x49, 0x6c,
+	0xcd, 0xab, 0x41, 0xef, 0x12, 0xfe, 0xeb, 0xb3, 0x59, 0x20, 0x38, 0xd3, 0x62, 0x7c, 0xf2, 0x45,
+	0xe0, 0xdf, 0x4f, 0xa9, 0xbe, 0xa2, 0x25, 0x11, 0x8d, 0x8d, 0x2d, 0x28, 0xce, 0xfc, 0x69, 0x4c,
+	0x0d, 0x51, 0x95, 0x24, 0x8e, 0xf7, 0x2b, 0x07, 0xad, 0xc5, 0x4d, 0xf4, 0x68, 0x34, 0xe5, 0x8f,
+	0x9a, 0x2a, 0x73, 0x54, 0x52, 0xda, 0xdc, 0x2a, 0xad, 0x59, 0x7d, 0x3b, 0x0e, 0x89, 0xa3, 0xa3,
+	0x41, 0xa8, 0xb7, 0xa3, 0x90, 0x44, 0x8d, 0x83, 0xb7, 0xd0, 0x12, 0x19, 0x57, 0xe8, 0x16, 0xcd,
+	0xc4, 0x1c, 0x58, 0x4d, 0xb2, 0x6e, 0x99, 0x64, 0x1e, 0xc4, 0x0e, 0x14, 0x23, 0x2e, 0x94, 0x74,
+	0x4b, 0x66, 0x7d, 0x70, 0x4d, 0x55, 0x2e, 0x14, 0x49, 0x00, 0x78, 0x01, 0x35, 0xba, 0x10, 0xca,
+	0x2d, 0x1b, 0x7c, 0x7b, 0x3e, 0xa3, 0x1b, 0x12, 0x92, 0x65, 0xb8, 0x77, 0x0b, 0xfb, 0xeb, 0x13,
+	0x2b, 0x23, 0xce, 0x24, 0xc5, 0x37, 0x50, 0x4e, 0x57, 0xd8, 0x31, 0x9c, 0x07, 0x1b, 0xeb, 0xb3,
+	0x10, 0x95, 0xa4, 0xd8, 0xe3, 0xb7, 0xd0, 0x58, 0xdf, 0x2f, 0xac, 0x41, 0x99, 0x8c, 0x06, 0x83,
+	0x9b, 0xc1, 0x75, 0x63, 0x4b, 0x3b, 0xc3, 0xfe, 0xa0, 0xa7, 0x1d, 0x07, 0xab, 0x50, 0xec, 0x13,
+	0x72, 0x4b, 0x1a, 0xb9, 0xe3, 0x17, 0xb0, 0xbb, 0x36, 0x33, 0x58, 0x86, 0xfc, 0xc7, 0x77, 0xc3,
+	0xc6, 0x96, 0x36, 0x46, 0xbd, 0x61, 0xc3, 0xe9, 0xfe, 0x70, 0x60, 0x3b, 0x79, 0x03, 0xa9, 0x98,
+	0x05, 0x63, 0xaa, 0xd7, 0x93, 0xd0, 0x49, 0x20, 0x15, 0x15, 0xd8, 0x5c, 0x7e, 0xa9, 0xcc, 0x23,
+	0xd9, 0xde, 0x4e, 0x75, 0xd0, 0xaf, 0x35, 0x7e, 0x80, 0xba, 0x6d, 0xf6, 0x2e, 0xa9, 0x16, 0x0f,
+	0xd3, 0x9e, 0xb2, 0xb6, 0xb6, 0xfd, 0xfc, 0x89, 0x6c, 0xa2, 0xd0, 0x7d, 0xc9, 0x64, 0xcf, 0xff,
+	0x06, 0x00, 0x00, 0xff, 0xff, 0x30, 0x52, 0xb7, 0x83, 0x28, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -819,7 +761,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AgentServiceClient interface {
 	Register(ctx context.Context, in *AgentState, opts ...grpc.CallOption) (*Empty, error)
-	GetGameServers(ctx context.Context, in *GetGameserversRequest, opts ...grpc.CallOption) (*GameserverRunConfigurationList, error)
+	GetGameServers(ctx context.Context, in *GetGameserversRequest, opts ...grpc.CallOption) (*GetGameserversResponse, error)
 }
 
 type agentServiceClient struct {
@@ -839,8 +781,8 @@ func (c *agentServiceClient) Register(ctx context.Context, in *AgentState, opts 
 	return out, nil
 }
 
-func (c *agentServiceClient) GetGameServers(ctx context.Context, in *GetGameserversRequest, opts ...grpc.CallOption) (*GameserverRunConfigurationList, error) {
-	out := new(GameserverRunConfigurationList)
+func (c *agentServiceClient) GetGameServers(ctx context.Context, in *GetGameserversRequest, opts ...grpc.CallOption) (*GetGameserversResponse, error) {
+	out := new(GetGameserversResponse)
 	err := c.cc.Invoke(ctx, "/proto.AgentService/GetGameServers", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -851,7 +793,7 @@ func (c *agentServiceClient) GetGameServers(ctx context.Context, in *GetGameserv
 // AgentServiceServer is the server API for AgentService service.
 type AgentServiceServer interface {
 	Register(context.Context, *AgentState) (*Empty, error)
-	GetGameServers(context.Context, *GetGameserversRequest) (*GameserverRunConfigurationList, error)
+	GetGameServers(context.Context, *GetGameserversRequest) (*GetGameserversResponse, error)
 }
 
 // UnimplementedAgentServiceServer can be embedded to have forward compatible implementations.
@@ -861,7 +803,7 @@ type UnimplementedAgentServiceServer struct {
 func (*UnimplementedAgentServiceServer) Register(ctx context.Context, req *AgentState) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (*UnimplementedAgentServiceServer) GetGameServers(ctx context.Context, req *GetGameserversRequest) (*GameserverRunConfigurationList, error) {
+func (*UnimplementedAgentServiceServer) GetGameServers(ctx context.Context, req *GetGameserversRequest) (*GetGameserversResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGameServers not implemented")
 }
 

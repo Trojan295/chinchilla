@@ -1,7 +1,6 @@
 package gameservers
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -57,16 +56,4 @@ func (manager factorioGameserverManager) createRunConfiguration(definition *serv
 		},
 		Environment: envVars,
 	}, nil
-}
-
-func (manager factorioGameserverManager) endpoint(server *server.Gameserver, runningServer *proto.Gameserver) (string, error) {
-	if runningServer != nil {
-		for _, port := range runningServer.PortMappings {
-			if port.ContainerPort == 34197 && port.Protocol == proto.NetworkProtocol_UDP {
-				return fmt.Sprintf("%s:%d", server.RunConfiguration.Agent, port.HostPort), nil
-			}
-		}
-	}
-	return "", errors.New("Endpoint not ready")
-
 }
