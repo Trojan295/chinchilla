@@ -48,7 +48,7 @@ func (manager minecraftGameserverManager) createDeployment(definition *server.Ga
 		UUID:  definition.UUID,
 		Image: "itzg/minecraft-server",
 		ResourceRequirements: &proto.ResourceRequirements{
-			MemoryReservation: 1532,
+			MemoryReservation: 1532 * 1024,
 		},
 		Ports: []*proto.NetworkPort{
 			&proto.NetworkPort{

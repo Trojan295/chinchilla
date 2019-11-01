@@ -46,7 +46,7 @@ func (manager factorioGameserverManager) createDeployment(definition *server.Gam
 		UUID:  definition.UUID,
 		Image: fmt.Sprintf("factoriotools/factorio:%s", definition.Version),
 		ResourceRequirements: &proto.ResourceRequirements{
-			MemoryReservation: 512,
+			MemoryReservation: 512 * 1024,
 		},
 		Ports: []*proto.NetworkPort{
 			&proto.NetworkPort{

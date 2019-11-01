@@ -17,7 +17,7 @@ func StartMetrics(gameserverStore GameserverStore) {
 					metric := prometheus.NewGauge(prometheus.GaugeOpts{
 						Name: "gameserver_running",
 						ConstLabels: prometheus.Labels{
-							"name":  server.Definition.Name,
+							"name":  server.Definition.UUID,
 							"owner": server.Definition.Owner,
 							"game":  server.Definition.Game,
 						},

@@ -35,6 +35,13 @@ type getGameserverResponse struct {
 
 type listGameserversResponse []getGameserverResponse
 
+type createGameserverRequest struct {
+	Name       string            `json:"name" binding:"required"`
+	Game       string            `json:"game" binding:"required"`
+	Version    string            `json:"version" binding:"required"`
+	Parameters map[string]string `json:"parameters" binding:"required"`
+}
+
 type createGameserverResponse getGameserverResponse
 
 type gameserversAPI struct {
@@ -52,13 +59,6 @@ func MountGameserverAPI(r *gin.Engine, agStore server.AgentStore, gsStore server
 	group.GET("/", auth.LoginRequired(), api.listGameservers)
 	group.POST("/", auth.LoginRequired(), api.createGameserver)
 	group.DELETE("/:uuid/", auth.LoginRequired(), api.deleteGameserver)
-}
-
-type createGameserverRequest struct {
-	Name       string            `json:"name" binding:"required"`
-	Game       string            `json:"game" binding:"required"`
-	Version    string            `json:"version" binding:"required"`
-	Parameters map[string]string `json:"parameters" binding:"required"`
 }
 
 func (api *gameserversAPI) getSupportedGameservers(c *gin.Context) {
