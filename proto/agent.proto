@@ -4,7 +4,7 @@ package proto;
 service AgentService
 {
     rpc Register(AgentState) returns (Empty);
-    rpc GetGameServers(GetGameserversRequest) returns (GameserverRunConfigurationList);
+    rpc GetGameserverDeployments(GetGameserverDeploymentsRequest) returns (GetGameserverDeploymentsResponse);
 }
 
 message Empty {}
@@ -15,7 +15,10 @@ message AgentResources
     int32 memory = 2;
 }
 
-message AgentResourceUsage { int32 memory = 2; }
+message AgentResourceUsage
+{
+    int32 memory = 2;
+}
 
 message AgentState
 {
@@ -25,7 +28,29 @@ message AgentState
     repeated Gameserver runningGameservers = 4;
 }
 
-message AgentResourceReservation { int32 memory = 2; }
+message Endpoint
+{
+    string ipAddress = 1;
+}
+
+enum GameserverStatus {
+    RUNNING = 0;
+    PENDING = 1;
+    ERROR = 2;
+}
+
+message Gameserver
+{
+    string UUID = 1;
+    GameserverStatus status = 2;
+    string info = 3;
+    Endpoint endpoint = 4;
+}
+
+message GetGameserverDeploymentsRequest
+{
+    string hostname = 1;
+}
 
 message ResourceRequirements
 {
@@ -46,24 +71,13 @@ message NetworkPort
     int32 containerPort = 2;
 }
 
-message NetworkPortMapping
-{
-    NetworkProtocol protocol = 1;
-    int32 containerPort = 2;
-    int32 hostPort = 3;
-}
-
 message EnvironmentVariable
 {
     string name = 1;
     string value = 2;
 }
 
-message GetGameserversRequest { string hostname = 1; }
-
-message GameserverRunConfigurationList { repeated GameserverRunConfiguration servers = 1; }
-
-message GameserverRunConfiguration
+message GameserverDeployment
 {
     string UUID = 1;
     string name = 2;
@@ -74,16 +88,7 @@ message GameserverRunConfiguration
     repeated EnvironmentVariable environment = 7;
 }
 
-enum GameserverStatus {
-    RUNNING = 0;
-    PENDING = 1;
-    ERROR = 2;
-}
-
-message Gameserver
+message GetGameserverDeploymentsResponse
 {
-    string UUID = 1;
-    GameserverStatus status = 2;
-    string info = 3;
-    repeated NetworkPortMapping portMappings = 4;
+    repeated GameserverDeployment deployments = 1;
 }

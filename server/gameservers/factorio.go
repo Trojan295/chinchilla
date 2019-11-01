@@ -1,7 +1,6 @@
 package gameservers
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -32,7 +31,7 @@ func (manager factorioGameserverManager) metadata() GameserverMetadata {
 	}
 }
 
-func (manager factorioGameserverManager) createRunConfiguration(definition *server.GameserverDefinition) (*proto.GameserverRunConfiguration, error) {
+func (manager factorioGameserverManager) createDeployment(definition *server.GameserverDefinition) (*proto.GameserverDeployment, error) {
 	envVars := []*proto.EnvironmentVariable{}
 
 	for key, value := range definition.Parameters {
@@ -42,12 +41,12 @@ func (manager factorioGameserverManager) createRunConfiguration(definition *serv
 		})
 	}
 
-	return &proto.GameserverRunConfiguration{
+	return &proto.GameserverDeployment{
 		Name:  definition.Name,
 		UUID:  definition.UUID,
 		Image: fmt.Sprintf("factoriotools/factorio:%s", definition.Version),
 		ResourceRequirements: &proto.ResourceRequirements{
-			MemoryReservation: 512,
+			MemoryReservation: 512 * 1024,
 		},
 		Ports: []*proto.NetworkPort{
 			&proto.NetworkPort{
@@ -57,16 +56,4 @@ func (manager factorioGameserverManager) createRunConfiguration(definition *serv
 		},
 		Environment: envVars,
 	}, nil
-}
-
-func (manager factorioGameserverManager) endpoint(server *server.Gameserver, runningServer *proto.Gameserver) (string, error) {
-	if runningServer != nil {
-		for _, port := range runningServer.PortMappings {
-			if port.ContainerPort == 34197 && port.Protocol == proto.NetworkProtocol_UDP {
-				return fmt.Sprintf("%s:%d", server.RunConfiguration.Agent, port.HostPort), nil
-			}
-		}
-	}
-	return "", errors.New("Endpoint not ready")
-
 }

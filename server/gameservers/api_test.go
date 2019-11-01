@@ -50,7 +50,7 @@ func TestListUserGameservers(t *testing.T) {
 	defer ctrl.Finish()
 
 	gameserver := server.Gameserver{
-		RunConfiguration: &proto.GameserverRunConfiguration{
+		Deployment: &proto.GameserverDeployment{
 			Agent: "localhost",
 		},
 		Definition: server.GameserverDefinition{
@@ -62,7 +62,7 @@ func TestListUserGameservers(t *testing.T) {
 		},
 	}
 	otherGameserver := server.Gameserver{
-		RunConfiguration: &proto.GameserverRunConfiguration{
+		Deployment: &proto.GameserverDeployment{
 			Agent: "localhost",
 		},
 		Definition: server.GameserverDefinition{
@@ -77,12 +77,8 @@ func TestListUserGameservers(t *testing.T) {
 	gameserverInstance := &proto.Gameserver{
 		UUID:   gameserver.Definition.UUID,
 		Status: proto.GameserverStatus_RUNNING,
-		PortMappings: []*proto.NetworkPortMapping{
-			&proto.NetworkPortMapping{
-				Protocol:      proto.NetworkProtocol_TCP,
-				ContainerPort: 25565,
-				HostPort:      25565,
-			},
+		Endpoint: &proto.Endpoint{
+			IpAddress: "10.0.0.14",
 		},
 	}
 
@@ -122,7 +118,7 @@ func TestListUserGameservers(t *testing.T) {
 	assert.Equal(t, "my server", res[0].Name)
 	assert.Equal(t, "Minecraft", res[0].Game)
 	assert.Equal(t, "1.12", res[0].Version)
-	assert.Equal(t, "localhost:25565", *res[0].Address)
+	assert.Equal(t, "10.0.0.14", *res[0].Address)
 	assert.Equal(t, "RUNNING", res[0].Status)
 }
 

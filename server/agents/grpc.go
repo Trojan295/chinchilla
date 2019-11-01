@@ -24,20 +24,20 @@ func (server AgentServiceServer) Register(ctx context.Context, agentState *proto
 	return &proto.Empty{}, err
 }
 
-// GetGameServers func
-func (server AgentServiceServer) GetGameServers(ctx context.Context, req *proto.GetGameserversRequest) (*proto.GameserverRunConfigurationList, error) {
+// GetGameserverDeployments func
+func (server AgentServiceServer) GetGameserverDeployments(ctx context.Context, req *proto.GetGameserverDeploymentsRequest) (*proto.GetGameserverDeploymentsResponse, error) {
 	gameservers, err := getGameserversForAgent(req.Hostname, server.GameserverStore)
 	if err != nil {
 		log.Printf("AgentServiceServer GetGameServers error: %v", err)
 		return nil, err
 	}
 
-	runConfigs := make([]*proto.GameserverRunConfiguration, 0, len(gameservers))
+	runConfigs := make([]*proto.GameserverDeployment, 0, len(gameservers))
 	for _, gs := range gameservers {
-		runConfigs = append(runConfigs, gs.RunConfiguration)
+		runConfigs = append(runConfigs, gs.Deployment)
 	}
 
-	return &proto.GameserverRunConfigurationList{
-		Servers: runConfigs,
+	return &proto.GetGameserverDeploymentsResponse{
+		Deployments: runConfigs,
 	}, nil
 }
