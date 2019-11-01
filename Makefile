@@ -1,5 +1,5 @@
 
-SERVER_MAIN := cmd/server.go
+SERVER_MAIN := cmd/server/server.go
 
 SERVER_BINARY := bin/chinchilla-server
 RELEASE_ZIP := release/chinchilla-server.zip
