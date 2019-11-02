@@ -1,4 +1,4 @@
-package: github.com/Trojan295/chinchilla-server
+package: github.com/Trojan295/chinchilla
 import:
 - package: github.com/dgrijalva/jwt-go
   version: ^3.2.0

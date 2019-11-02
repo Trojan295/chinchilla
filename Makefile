@@ -5,6 +5,7 @@ SCHEDULER_MAIN := cmd/scheduler/scheduler.go
 SCHEDULER_BINARY := bin/chinchilla-scheduler
 
 BINARIES := $(SERVER_BINARY) $(SCHEDULER_BINARY)
+RELEASE_FILES := chinchilla.toml chinchilla-server.service
 
 RELEASE_ZIP := release/chinchilla.zip
 
@@ -14,7 +15,7 @@ release: $(RELEASE_ZIP)
 
 $(RELEASE_ZIP): $(BINARIES)
 	mkdir -p release
-	zip $@ $(BINARIES)
+	zip $@ $(BINARIES) $(RELEASE_FILES)
 
 $(SERVER_BINARY): deps $(SERVER_MAIN) proto/agent.pb.go
 	go build -ldflags="-X main.version=$(VERSION)" -o $@ $(SERVER_MAIN)
