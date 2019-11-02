@@ -3,15 +3,14 @@ package gameservers
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Trojan295/chinchilla-server/mocks"
-	"github.com/Trojan295/chinchilla-server/proto"
-	"github.com/Trojan295/chinchilla-server/server"
-	"github.com/Trojan295/chinchilla-server/server/utils"
+	"github.com/Trojan295/chinchilla/mocks"
+	"github.com/Trojan295/chinchilla/proto"
+	"github.com/Trojan295/chinchilla/server"
+	"github.com/Trojan295/chinchilla/server/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -39,9 +38,6 @@ func TestListAvailableGameservers(t *testing.T) {
 	assert.Len(t, res, 2)
 	assert.Equal(t, "Minecraft", res[0].Name)
 	assert.Equal(t, "Factorio", res[1].Name)
-
-	fmt.Println(w.Body.String())
-
 	assert.Equal(t, 200, w.Code)
 }
 
@@ -84,9 +80,11 @@ func TestListUserGameservers(t *testing.T) {
 
 	agentStore := mocks.NewMockAgentStore(ctrl)
 	agentStore.EXPECT().
-		GetAgentState("localhost").
-		Return(&proto.AgentState{
-			RunningGameservers: []*proto.Gameserver{gameserverInstance},
+		GetAgent("localhost").
+		Return(&server.Agent{
+			State: proto.AgentState{
+				RunningGameservers: []*proto.Gameserver{gameserverInstance},
+			},
 		}, nil).
 		AnyTimes()
 
@@ -127,14 +125,6 @@ func TestCreateNewServer(t *testing.T) {
 	defer ctrl.Finish()
 
 	agentStore := mocks.NewMockAgentStore(ctrl)
-	agentStore.EXPECT().
-		ListAgents().
-		Return([]proto.AgentState{
-			proto.AgentState{
-				Hostname: "localhost",
-			},
-		}, nil).
-		Times(1)
 
 	gameserverStore := mocks.NewMockGameserverStore(ctrl)
 	gameserverStore.EXPECT().

@@ -1,6 +1,10 @@
 [server]
 port = 10110
 
+[scheduler]
+interval = 5
+agentContactDelay = 30
+
 [auth]
 type = "header"
 

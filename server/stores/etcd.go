@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	chinchilla_proto "github.com/Trojan295/chinchilla-server/proto"
-	"github.com/Trojan295/chinchilla-server/server"
-	"github.com/golang/protobuf/proto"
+	"github.com/Trojan295/chinchilla/server"
 	"go.etcd.io/etcd/client"
 )
 
@@ -41,21 +39,21 @@ func NewEtcdStore(config client.Config) (*EtcdStore, error) {
 }
 
 // RegisterAgent registers a new Agent
-func (store *EtcdStore) RegisterAgent(agent *chinchilla_proto.AgentState) error {
-	value := proto.MarshalTextString(agent)
+func (store *EtcdStore) RegisterAgent(agent *server.Agent) error {
+	value, _ := json.Marshal(agent)
 
 	_, err := store.keysAPI.Set(
 		context.Background(),
-		fmt.Sprintf("/agents/%s/state", agent.Hostname),
-		value, nil,
+		fmt.Sprintf("/agents/%s/state", agent.State.Hostname),
+		string(value), nil,
 	)
 
 	return err
 }
 
 // ListAgents returns a AgentDetails list
-func (store *EtcdStore) ListAgents() ([]chinchilla_proto.AgentState, error) {
-	agents := make([]chinchilla_proto.AgentState, 0)
+func (store *EtcdStore) ListAgents() ([]server.Agent, error) {
+	agents := make([]server.Agent, 0)
 
 	agentsRes, err := store.keysAPI.Get(context.Background(), "/agents", nil)
 	if err != nil {
@@ -64,23 +62,23 @@ func (store *EtcdStore) ListAgents() ([]chinchilla_proto.AgentState, error) {
 
 	for _, agentNode := range agentsRes.Node.Nodes {
 		detailsRes, _ := store.keysAPI.Get(context.Background(), fmt.Sprintf("%s/state", agentNode.Key), nil)
-		agentDetails := chinchilla_proto.AgentState{}
-		proto.UnmarshalText(detailsRes.Node.Value, &agentDetails)
+		var agentDetails server.Agent
+		json.Unmarshal([]byte(detailsRes.Node.Value), &agentDetails)
 		agents = append(agents, agentDetails)
 	}
 	return agents, err
 }
 
 // GetAgentState func
-func (store *EtcdStore) GetAgentState(UUID string) (*chinchilla_proto.AgentState, error) {
+func (store *EtcdStore) GetAgent(UUID string) (*server.Agent, error) {
 	agentStateRes, err := store.keysAPI.Get(context.Background(), fmt.Sprintf("/agents/%s/state", UUID), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	agentState := &chinchilla_proto.AgentState{}
-	proto.UnmarshalText(agentStateRes.Node.Value, agentState)
-	return agentState, nil
+	var agentState server.Agent
+	json.Unmarshal([]byte(agentStateRes.Node.Value), &agentState)
+	return &agentState, nil
 }
 
 // ListGameservers returns a Gameserver list
@@ -132,5 +130,12 @@ func (store *EtcdStore) DeleteGameserver(UUID string) error {
 func (store *EtcdStore) CreateGameserver(gs *server.Gameserver) error {
 	gsData, _ := json.Marshal(*gs)
 	_, err := store.keysAPI.Create(context.Background(), fmt.Sprintf("/gameservers/%s", gs.Definition.UUID), string(gsData))
+	return err
+}
+
+// UpdateGameserver func
+func (store *EtcdStore) UpdateGameserver(gs *server.Gameserver) error {
+	gsData, _ := json.Marshal(*gs)
+	_, err := store.keysAPI.Update(context.Background(), fmt.Sprintf("/gameservers/%s", gs.Definition.UUID), string(gsData))
 	return err
 }

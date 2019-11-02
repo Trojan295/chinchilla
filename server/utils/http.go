@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/Trojan295/chinchilla-server/server/auth"
+	"github.com/Trojan295/chinchilla/server/auth"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )

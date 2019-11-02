@@ -2,11 +2,10 @@ package gameservers
 
 import (
 	"log"
-	"math/rand"
 	"net/http"
 
-	"github.com/Trojan295/chinchilla-server/server"
-	"github.com/Trojan295/chinchilla-server/server/auth"
+	"github.com/Trojan295/chinchilla/server"
+	"github.com/Trojan295/chinchilla/server/auth"
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
@@ -109,12 +108,8 @@ func (api *gameserversAPI) createGameserver(c *gin.Context) {
 		c.JSON(http.StatusBadGateway, gin.H{"error": err})
 		return
 	}
+
 	gs.Deployment = deployment
-
-	agents, _ := api.agentsStore.ListAgents()
-	idx := rand.Intn(len(agents))
-	gs.Deployment.Agent = agents[idx].Hostname
-
 	api.gameserverStore.CreateGameserver(&gs)
 
 	response := createGameserverResponse{
@@ -142,14 +137,14 @@ func (api *gameserversAPI) listGameservers(c *gin.Context) {
 			continue
 		}
 
-		agentState, err := api.agentsStore.GetAgentState(gameserver.Deployment.Agent)
+		agent, err := api.agentsStore.GetAgent(gameserver.Deployment.Agent)
 
 		var address string
 		status := "UNKNOWN"
 		if err != nil {
 			log.Printf("gameserversAPI GetAgentState error: %v", err)
 		} else {
-			for _, agentServer := range agentState.RunningGameservers {
+			for _, agentServer := range agent.State.RunningGameservers {
 				if agentServer.UUID == gameserver.Definition.UUID {
 					status = string(agentServer.Status.String())
 					address, _ = api.gameserverManager.Endpoint(&gameserver, agentServer)

@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Trojan295/chinchilla-server/server"
-	"github.com/Trojan295/chinchilla-server/server/auth"
+	"github.com/Trojan295/chinchilla/server"
+	"github.com/Trojan295/chinchilla/server/auth"
 	"github.com/gin-gonic/gin"
 )
 
@@ -59,7 +59,7 @@ func (api *agentsAPI) getAgents(c *gin.Context) {
 
 	for _, agent := range agents {
 		var reservedMemory *int
-		gameservers, err := getGameserversForAgent(agent.Hostname, api.gameserverStore)
+		gameservers, err := server.GetGameserversForAgent(agent.State.Hostname, api.gameserverStore)
 		if err == nil {
 			acc := 0
 			for _, gs := range gameservers {
@@ -69,14 +69,14 @@ func (api *agentsAPI) getAgents(c *gin.Context) {
 		}
 
 		response = append(response, getAgentReponse{
-			Hostname: agent.Hostname,
+			Hostname: agent.State.Hostname,
 			Resources: &agentResources{
-				Cpus:        int(agent.Resources.Cpus),
-				Memory:      int(agent.Resources.Memory),
-				IPAddresses: int(agent.Resources.IpAddresses),
+				Cpus:        int(agent.State.Resources.Cpus),
+				Memory:      int(agent.State.Resources.Memory),
+				IPAddresses: int(agent.State.Resources.IpAddresses),
 			},
 			UsedResources: &agentUsedResources{
-				Memory: int(agent.ResourceUsage.Memory),
+				Memory: int(agent.State.ResourceUsage.Memory),
 			},
 			ReservedResources: &agentReservedResources{
 				Memory: *reservedMemory,

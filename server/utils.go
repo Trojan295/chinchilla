@@ -1,16 +1,13 @@
-package agents
+package server
 
-import (
-	"github.com/Trojan295/chinchilla-server/server"
-)
-
-func getGameserversForAgent(agentHostname string, store server.GameserverStore) ([]server.Gameserver, error) {
+// GetGameserversForAgent func
+func GetGameserversForAgent(agentHostname string, store GameserverStore) ([]Gameserver, error) {
 	gameservers, err := store.ListGameservers()
 	if err != nil {
 		return nil, err
 	}
 
-	agentGameservers := make([]server.Gameserver, 0)
+	agentGameservers := make([]Gameserver, 0)
 	for _, gs := range gameservers {
 		if gs.Deployment.Agent == agentHostname {
 			agentGameservers = append(agentGameservers, gs)

@@ -1,6 +1,10 @@
 package server
 
-import "github.com/Trojan295/chinchilla-server/proto"
+import (
+	"time"
+
+	"github.com/Trojan295/chinchilla/proto"
+)
 
 // GameserverDefinition represents the receipe for the game server
 type GameserverDefinition struct {
@@ -18,16 +22,22 @@ type Gameserver struct {
 	Deployment *proto.GameserverDeployment
 }
 
+type Agent struct {
+	LastContact time.Time
+	State       proto.AgentState
+}
+
 // AgentStore is an interface for an agents storage
 type AgentStore interface {
-	RegisterAgent(*proto.AgentState) error
-	ListAgents() ([]proto.AgentState, error)
-	GetAgentState(UUID string) (*proto.AgentState, error)
+	RegisterAgent(*Agent) error
+	ListAgents() ([]Agent, error)
+	GetAgent(UUID string) (*Agent, error)
 }
 
 // GameserverStore interface
 type GameserverStore interface {
 	CreateGameserver(*Gameserver) error
+	UpdateGameserver(*Gameserver) error
 	ListGameservers() ([]Gameserver, error)
 	GetGameserver(UUID string) (*Gameserver, error)
 	DeleteGameserver(UUID string) error

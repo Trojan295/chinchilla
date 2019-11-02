@@ -3,9 +3,10 @@ package agents
 import (
 	"context"
 	"log"
+	"time"
 
-	"github.com/Trojan295/chinchilla-server/proto"
-	"github.com/Trojan295/chinchilla-server/server"
+	"github.com/Trojan295/chinchilla/proto"
+	"github.com/Trojan295/chinchilla/server"
 )
 
 // AgentServiceServer implements the gRPC AgentService server
@@ -15,18 +16,23 @@ type AgentServiceServer struct {
 }
 
 // Register handles registration of a new agent
-func (server AgentServiceServer) Register(ctx context.Context, agentState *proto.AgentState) (*proto.Empty, error) {
+func (rpcServer AgentServiceServer) Register(ctx context.Context, agentState *proto.AgentState) (*proto.Empty, error) {
 	log.Printf("agentServiceServer Register: register agent %s",
 		agentState.Hostname)
 
-	err := server.AgentStore.RegisterAgent(agentState)
+	agent := &server.Agent{
+		State:       *agentState,
+		LastContact: time.Now(),
+	}
+
+	err := rpcServer.AgentStore.RegisterAgent(agent)
 
 	return &proto.Empty{}, err
 }
 
 // GetGameserverDeployments func
-func (server AgentServiceServer) GetGameserverDeployments(ctx context.Context, req *proto.GetGameserverDeploymentsRequest) (*proto.GetGameserverDeploymentsResponse, error) {
-	gameservers, err := getGameserversForAgent(req.Hostname, server.GameserverStore)
+func (rpcServer AgentServiceServer) GetGameserverDeployments(ctx context.Context, req *proto.GetGameserverDeploymentsRequest) (*proto.GetGameserverDeploymentsResponse, error) {
+	gameservers, err := server.GetGameserversForAgent(req.Hostname, rpcServer.GameserverStore)
 	if err != nil {
 		log.Printf("AgentServiceServer GetGameServers error: %v", err)
 		return nil, err
