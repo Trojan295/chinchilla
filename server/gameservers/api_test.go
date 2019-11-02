@@ -80,9 +80,11 @@ func TestListUserGameservers(t *testing.T) {
 
 	agentStore := mocks.NewMockAgentStore(ctrl)
 	agentStore.EXPECT().
-		GetAgentState("localhost").
-		Return(&proto.AgentState{
-			RunningGameservers: []*proto.Gameserver{gameserverInstance},
+		GetAgent("localhost").
+		Return(&server.Agent{
+			State: proto.AgentState{
+				RunningGameservers: []*proto.Gameserver{gameserverInstance},
+			},
 		}, nil).
 		AnyTimes()
 

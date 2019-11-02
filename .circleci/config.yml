@@ -3,7 +3,7 @@ jobs:
   lint:
     docker:
       - image: golang:1.12
-    working_directory: /go/src/github.com/Trojan295/chinchilla-server
+    working_directory: /go/src/github.com/Trojan295/chinchilla
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -27,7 +27,7 @@ jobs:
   build:
     docker:
       - image: golang:1.12
-    working_directory: /go/src/github.com/Trojan295/chinchilla-server
+    working_directory: /go/src/github.com/Trojan295/chinchilla
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -40,10 +40,10 @@ jobs:
             apt update
             apt install -y golang-glide zip
       - run:
-          command: SERVER_VERSION=${CIRCLE_TAG:-$CIRCLE_SHA1} make release
+          command: VERSION=${CIRCLE_TAG:-$CIRCLE_SHA1} make release
       - store_artifacts:
-          path: release/chinchilla-server.zip
-          destination: chinchilla-server.zip
+          path: release/chinchilla.zip
+          destination: chinchilla.zip
       - persist_to_workspace:
           root: .
           paths:

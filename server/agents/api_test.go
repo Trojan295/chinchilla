@@ -19,16 +19,18 @@ func TestListAgents(t *testing.T) {
 	defer ctrl.Finish()
 
 	agentStore := mocks.NewMockAgentStore(ctrl)
-	agentStore.EXPECT().ListAgents().Return([]proto.AgentState{
-		proto.AgentState{
-			Hostname: "localhost",
-			Resources: &proto.AgentResources{
-				Cpus:        2,
-				Memory:      2048,
-				IpAddresses: 2,
-			},
-			ResourceUsage: &proto.AgentResourceUsage{
-				Memory: 1024,
+	agentStore.EXPECT().ListAgents().Return([]server.Agent{
+		server.Agent{
+			State: proto.AgentState{
+				Hostname: "localhost",
+				Resources: &proto.AgentResources{
+					Cpus:        2,
+					Memory:      2048,
+					IpAddresses: 2,
+				},
+				ResourceUsage: &proto.AgentResourceUsage{
+					Memory: 1024,
+				},
 			},
 		},
 	}, nil).AnyTimes()

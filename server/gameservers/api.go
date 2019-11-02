@@ -137,14 +137,14 @@ func (api *gameserversAPI) listGameservers(c *gin.Context) {
 			continue
 		}
 
-		agentState, err := api.agentsStore.GetAgentState(gameserver.Deployment.Agent)
+		agent, err := api.agentsStore.GetAgent(gameserver.Deployment.Agent)
 
 		var address string
 		status := "UNKNOWN"
 		if err != nil {
 			log.Printf("gameserversAPI GetAgentState error: %v", err)
 		} else {
-			for _, agentServer := range agentState.RunningGameservers {
+			for _, agentServer := range agent.State.RunningGameservers {
 				if agentServer.UUID == gameserver.Definition.UUID {
 					status = string(agentServer.Status.String())
 					address, _ = api.gameserverManager.Endpoint(&gameserver, agentServer)

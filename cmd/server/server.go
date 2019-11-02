@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Trojan295/chinchilla/common"
 	"github.com/Trojan295/chinchilla/proto"
 	"github.com/Trojan295/chinchilla/server"
 	"github.com/Trojan295/chinchilla/server/agents"
@@ -27,7 +28,7 @@ func NewAgentServiceServer(etcdStore *stores.EtcdStore) agents.AgentServiceServe
 	}
 }
 
-func runGrpcServer(config *server.Configuration, etcdStore *stores.EtcdStore) {
+func runGrpcServer(config *common.Configuration, etcdStore *stores.EtcdStore) {
 	port := fmt.Sprintf(":%d", config.Server.Port)
 
 	lis, err := net.Listen("tcp", port)
@@ -60,7 +61,7 @@ var version string
 func main() {
 	log.Printf("Chinchilla server v%s\n", version)
 
-	config, err := server.LoadConfig()
+	config, err := common.LoadConfig()
 	if err != nil {
 		panic(err)
 	}
