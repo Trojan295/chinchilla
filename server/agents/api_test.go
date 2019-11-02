@@ -6,10 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Trojan295/chinchilla-server/mocks"
-	"github.com/Trojan295/chinchilla-server/proto"
-	"github.com/Trojan295/chinchilla-server/server"
-	"github.com/Trojan295/chinchilla-server/server/utils"
+	"github.com/Trojan295/chinchilla/mocks"
+	"github.com/Trojan295/chinchilla/proto"
+	"github.com/Trojan295/chinchilla/server"
+	"github.com/Trojan295/chinchilla/server/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )

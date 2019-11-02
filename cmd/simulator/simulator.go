@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Trojan295/chinchilla-server/proto"
+	"github.com/Trojan295/chinchilla/proto"
 	"google.golang.org/grpc"
 )
 

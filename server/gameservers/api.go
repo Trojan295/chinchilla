@@ -2,11 +2,10 @@ package gameservers
 
 import (
 	"log"
-	"math/rand"
 	"net/http"
 
-	"github.com/Trojan295/chinchilla-server/server"
-	"github.com/Trojan295/chinchilla-server/server/auth"
+	"github.com/Trojan295/chinchilla/server"
+	"github.com/Trojan295/chinchilla/server/auth"
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
@@ -109,12 +108,8 @@ func (api *gameserversAPI) createGameserver(c *gin.Context) {
 		c.JSON(http.StatusBadGateway, gin.H{"error": err})
 		return
 	}
+
 	gs.Deployment = deployment
-
-	agents, _ := api.agentsStore.ListAgents()
-	idx := rand.Intn(len(agents))
-	gs.Deployment.Agent = agents[idx].Hostname
-
 	api.gameserverStore.CreateGameserver(&gs)
 
 	response := createGameserverResponse{

@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Trojan295/chinchilla-server/server"
-	"github.com/Trojan295/chinchilla-server/server/auth"
+	"github.com/Trojan295/chinchilla/server"
+	"github.com/Trojan295/chinchilla/server/auth"
 	"github.com/gin-gonic/gin"
 )
 
@@ -59,7 +59,7 @@ func (api *agentsAPI) getAgents(c *gin.Context) {
 
 	for _, agent := range agents {
 		var reservedMemory *int
-		gameservers, err := getGameserversForAgent(agent.Hostname, api.gameserverStore)
+		gameservers, err := server.GetGameserversForAgent(agent.Hostname, api.gameserverStore)
 		if err == nil {
 			acc := 0
 			for _, gs := range gameservers {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Trojan295/chinchilla-server/proto"
-	"github.com/Trojan295/chinchilla-server/server"
+	"github.com/Trojan295/chinchilla/proto"
+	"github.com/Trojan295/chinchilla/server"
 )
 
 type factorioGameserverManager struct {

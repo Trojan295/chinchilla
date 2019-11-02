@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 
-	chinchilla_proto "github.com/Trojan295/chinchilla-server/proto"
-	"github.com/Trojan295/chinchilla-server/server"
+	chinchilla_proto "github.com/Trojan295/chinchilla/proto"
+	"github.com/Trojan295/chinchilla/server"
 	"github.com/golang/protobuf/proto"
 	"go.etcd.io/etcd/client"
 )

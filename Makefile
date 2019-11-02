@@ -26,4 +26,4 @@ deps:
 	rm -rf vendor/github.com/docker/docker/vendor
 
 mockgen:
-	mockgen -destination mocks/mock_server.go -package mocks github.com/Trojan295/chinchilla-server/server AgentStore,GameserverStore
+	mockgen -destination mocks/mock_server.go -package mocks github.com/Trojan295/chinchilla/server AgentStore,GameserverStore

@@ -1,6 +1,6 @@
 package server
 
-import "github.com/Trojan295/chinchilla-server/proto"
+import "github.com/Trojan295/chinchilla/proto"
 
 // GameserverDefinition represents the receipe for the game server
 type GameserverDefinition struct {
