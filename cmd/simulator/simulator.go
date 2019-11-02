@@ -35,6 +35,7 @@ func main() {
 	log.Printf("Hostname: %s", *hostname)
 	log.Printf("CPUs: %d", *cpus)
 	log.Printf("Memory: %d GB", *memory)
+	log.Printf("Available IPs: %s", ipAddresses)
 
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
@@ -53,8 +54,9 @@ func main() {
 		agentState := &proto.AgentState{
 			Hostname: *hostname,
 			Resources: &proto.AgentResources{
-				Cpus:   int32(*cpus),
-				Memory: int32(*memory * 1024 * 1024),
+				Cpus:        int32(*cpus),
+				Memory:      int32(*memory * 1024 * 1024),
+				IpAddresses: int32(len(ipAddresses)),
 			},
 			ResourceUsage: &proto.AgentResourceUsage{
 				Memory: int32(usedMemory),

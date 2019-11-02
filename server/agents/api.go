@@ -9,6 +9,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type agentResources struct {
+	Cpus        int `json:"cpus"`
+	Memory      int `json:"memory"`
+	IPAddresses int `json:"ipAddresses"`
+}
+
+type agentUsedResources struct {
+	Memory int `json:"memory"`
+}
+
+type agentReservedResources struct {
+	Memory int `json:"memory"`
+}
+
+type getAgentReponse struct {
+	Hostname          string                  `json:"hostname"`
+	Resources         *agentResources         `json:"resources"`
+	UsedResources     *agentUsedResources     `json:"usedResources"`
+	ReservedResources *agentReservedResources `json:"reservedResources"`
+}
+
+type listAgentsResponse []getAgentReponse
+
 type agentsAPI struct {
 	agentsStore     server.AgentStore
 	gameserverStore server.GameserverStore
@@ -32,7 +55,7 @@ func (api *agentsAPI) getAgents(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Cannot list agents"})
 	}
 
-	response := make([]gin.H, 0)
+	var response listAgentsResponse
 
 	for _, agent := range agents {
 		var reservedMemory *int
@@ -45,17 +68,18 @@ func (api *agentsAPI) getAgents(c *gin.Context) {
 			reservedMemory = &acc
 		}
 
-		response = append(response, gin.H{
-			"hostname": agent.Hostname,
-			"resources": gin.H{
-				"cpus":   agent.Resources.Cpus,
-				"memory": agent.Resources.Memory,
+		response = append(response, getAgentReponse{
+			Hostname: agent.Hostname,
+			Resources: &agentResources{
+				Cpus:        int(agent.Resources.Cpus),
+				Memory:      int(agent.Resources.Memory),
+				IPAddresses: int(agent.Resources.IpAddresses),
 			},
-			"usedResources": gin.H{
-				"memory": agent.ResourceUsage.Memory,
+			UsedResources: &agentUsedResources{
+				Memory: int(agent.ResourceUsage.Memory),
 			},
-			"reservedResources": gin.H{
-				"memory": reservedMemory,
+			ReservedResources: &agentReservedResources{
+				Memory: *reservedMemory,
 			},
 		})
 	}

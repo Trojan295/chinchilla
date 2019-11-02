@@ -1,6 +1,7 @@
 package agents
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -22,8 +23,9 @@ func TestListAgents(t *testing.T) {
 		proto.AgentState{
 			Hostname: "localhost",
 			Resources: &proto.AgentResources{
-				Cpus:   2,
-				Memory: 2024,
+				Cpus:        2,
+				Memory:      2048,
+				IpAddresses: 2,
 			},
 			ResourceUsage: &proto.AgentResourceUsage{
 				Memory: 1024,
@@ -57,7 +59,15 @@ func TestListAgents(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "[{\"hostname\":\"localhost\",\"reservedResources\":{\"memory\":1024},\"resources\":{\"cpus\":2,\"memory\":2024},\"usedResources\":{\"memory\":1024}}]", w.Body.String())
+
+	var res listAgentsResponse
+	json.Unmarshal(w.Body.Bytes(), &res)
+	assert.Equal(t, "localhost", res[0].Hostname)
+	assert.Equal(t, 2, res[0].Resources.Cpus)
+	assert.Equal(t, 2048, res[0].Resources.Memory)
+	assert.Equal(t, 1024, res[0].UsedResources.Memory)
+	assert.Equal(t, 1024, res[0].ReservedResources.Memory)
+	assert.Equal(t, 2, res[0].Resources.IPAddresses)
 }
 
 func TestListAgentsWhenNotAuthorized(t *testing.T) {
