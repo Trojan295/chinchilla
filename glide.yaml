@@ -26,3 +26,5 @@ import:
   version: 1.1.0
 - package: github.com/BurntSushi/toml
   version: ^0.3.1
+- package: github.com/docker/docker
+  version: ^17.5.0-ce-rc3

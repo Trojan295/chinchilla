@@ -11,14 +11,14 @@ message Empty {}
 
 message AgentResources
 {
-    int32 cpus = 1;
-    int32 memory = 2;
-    int32 ipAddresses = 3;
+    int64 cpus = 1;
+    int64 memory = 2;
+    int64 ipAddresses = 3;
 }
 
 message AgentResourceUsage
 {
-    int32 memory = 2;
+    int64 memory = 2;
 }
 
 message AgentState
@@ -55,10 +55,10 @@ message GetGameserverDeploymentsRequest
 
 message ResourceRequirements
 {
-    int32 cpuReservation = 1;
-    int32 cpuLimit = 2;
-    int32 memoryReservation = 3;
-    int32 memoryLimit = 4;
+    int64 cpuReservation = 1;
+    int64 cpuLimit = 2;
+    int64 memoryReservation = 3;
+    int64 memoryLimit = 4;
 }
 
 enum NetworkProtocol {
@@ -69,7 +69,7 @@ enum NetworkProtocol {
 message NetworkPort
 {
     NetworkProtocol protocol = 1;
-    int32 containerPort = 2;
+    int64 containerPort = 2;
 }
 
 message EnvironmentVariable

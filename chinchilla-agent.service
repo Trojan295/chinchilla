@@ -1,0 +1,12 @@
+[Unit]
+Description=Chinchilla Agent
+
+[Service]
+Type=simple
+WorkingDirectory=/home/debian
+ExecStart=chinchilla-agent
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
