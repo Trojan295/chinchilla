@@ -22,7 +22,7 @@ func TestCreateGameserverContainerConfig(t *testing.T) {
 		Image: "minecraft:1.3.8",
 	}
 
-	containerConfig := createGameserverContainerConfig(runConfig)
+	containerConfig := createGameserverContainerConfig(runConfig, "127.0.0.1")
 
 	if containerConfig.Image != runConfig.Image {
 		t.Errorf("Wrong image")
@@ -33,7 +33,8 @@ func TestCreateGameserverContainerConfig(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(containerConfig.Labels, map[string]string{
-		"chinchilla.agent.gameserver": runConfig.UUID,
+		"chinchilla.gameserver.uuid":       runConfig.UUID,
+		"chinchilla.gameserver.ip_address": "127.0.0.1",
 	}) {
 		t.Errorf("Wrong labels: %v", containerConfig.Labels)
 	}
@@ -53,10 +54,7 @@ func TestCreateGameserverHostConfig(t *testing.T) {
 		},
 	}
 
-	hostConfig, err := createGameserverHostConfig(deployment, []string{"127.0.0.1"})
-	if err != nil {
-		t.Fatalf(err.Error())
-	}
+	hostConfig := createGameserverHostConfig(deployment, "127.0.0.1")
 
 	if !reflect.DeepEqual(hostConfig.PortBindings, nat.PortMap{
 		"1024/tcp": []nat.PortBinding{

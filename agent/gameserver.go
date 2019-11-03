@@ -91,10 +91,10 @@ func (manager *GameserverManager) GetGameservers() ([]*proto.Gameserver, error) 
 	for _, cont := range containers {
 
 		gameservers = append(gameservers, &proto.Gameserver{
-			UUID:   cont.Labels["chinchilla.agent.gameserver"],
+			UUID:   cont.Labels["chinchilla.gameserver.uuid"],
 			Status: proto.GameserverStatus_RUNNING,
 			Endpoint: &proto.Endpoint{
-				IpAddress: cont.Ports[0].IP,
+				IpAddress: cont.Labels["chinchilla.gameserver.ip_address"],
 			},
 		})
 	}
@@ -128,7 +128,7 @@ func (manager *GameserverManager) RemoveGameserver(uuid string) error {
 	return manager.removeGameServerContainer(uuid)
 }
 
-func createGameserverContainerConfig(gameserverConfig *proto.GameserverDeployment) *container.Config {
+func createGameserverContainerConfig(gameserverConfig *proto.GameserverDeployment, ipAddress string) *container.Config {
 	envs := make([]string, 0)
 	for _, variable := range gameserverConfig.Environment {
 		env := fmt.Sprintf("%s=%s", variable.Name, variable.Value)
@@ -139,16 +139,13 @@ func createGameserverContainerConfig(gameserverConfig *proto.GameserverDeploymen
 		Image: gameserverConfig.Image,
 		Env:   envs,
 		Labels: map[string]string{
-			"chinchilla.agent.gameserver": gameserverConfig.UUID,
+			"chinchilla.gameserver.uuid":       gameserverConfig.UUID,
+			"chinchilla.gameserver.ip_address": ipAddress,
 		},
 	}
 }
 
-func createGameserverHostConfig(deployment *proto.GameserverDeployment, allIPs []string) (*container.HostConfig, error) {
-	ipAddress, err := findFreeIPAddress(deployment.Ports, allIPs)
-	if err != nil {
-		return nil, err
-	}
+func createGameserverHostConfig(deployment *proto.GameserverDeployment, ipAddress string) *container.HostConfig {
 
 	portBindings := nat.PortMap{}
 	for _, port := range deployment.Ports {
@@ -161,7 +158,7 @@ func createGameserverHostConfig(deployment *proto.GameserverDeployment, allIPs [
 		key, _ := nat.NewPort(protocolName, fmt.Sprintf("%d", port.ContainerPort))
 		value := []nat.PortBinding{
 			{
-				HostIP:   *ipAddress,
+				HostIP:   ipAddress,
 				HostPort: fmt.Sprintf("%d", port.ContainerPort),
 			},
 		}
@@ -174,7 +171,7 @@ func createGameserverHostConfig(deployment *proto.GameserverDeployment, allIPs [
 			Memory:            deployment.ResourceRequirements.MemoryLimit * 1024,
 			MemoryReservation: deployment.ResourceRequirements.MemoryReservation * 1024,
 		},
-	}, nil
+	}
 }
 
 func findFreeIPAddress(ports []*proto.NetworkPort, allIPs []string) (*string, error) {
@@ -218,25 +215,25 @@ func findFreeIPAddress(ports []*proto.NetworkPort, allIPs []string) (*string, er
 	return nil, errors.New("Cannot find free IP")
 }
 
-func (manager *GameserverManager) createGameserverContainer(gameServer *proto.GameserverDeployment) error {
+func (manager *GameserverManager) createGameserverContainer(deployment *proto.GameserverDeployment) error {
 	ctx := context.Background()
 
-	reader, err := manager.image.ImagePull(ctx, gameServer.Image, types.ImagePullOptions{})
+	reader, err := manager.image.ImagePull(ctx, deployment.Image, types.ImagePullOptions{})
 	if err != nil {
 		return err
 	}
 	io.Copy(os.Stdout, reader)
 
-	hostConfig, err := createGameserverHostConfig(gameServer, manager.ipAddresses)
+	ipAddress, err := findFreeIPAddress(deployment.Ports, manager.ipAddresses)
 	if err != nil {
 		return err
 	}
 
 	container, err := manager.containers.ContainerCreate(ctx,
-		createGameserverContainerConfig(gameServer),
-		hostConfig,
+		createGameserverContainerConfig(deployment, *ipAddress),
+		createGameserverHostConfig(deployment, *ipAddress),
 		nil,
-		gameServer.UUID,
+		deployment.UUID,
 	)
 
 	if err != nil {
