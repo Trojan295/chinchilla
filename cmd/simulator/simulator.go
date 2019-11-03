@@ -54,12 +54,12 @@ func main() {
 		agentState := &proto.AgentState{
 			Hostname: *hostname,
 			Resources: &proto.AgentResources{
-				Cpus:        int32(*cpus),
-				Memory:      int32(*memory * 1024 * 1024),
-				IpAddresses: int32(len(ipAddresses)),
+				Cpus:        int64(*cpus),
+				Memory:      int64(*memory * 1024 * 1024),
+				IpAddresses: int64(len(ipAddresses)),
 			},
 			ResourceUsage: &proto.AgentResourceUsage{
-				Memory: int32(usedMemory),
+				Memory: int64(usedMemory),
 			},
 			RunningGameservers: runningGameservers,
 		}

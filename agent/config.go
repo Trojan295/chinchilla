@@ -1,4 +1,4 @@
-package common
+package agent
 
 import (
 	"io/ioutil"
@@ -8,31 +8,23 @@ import (
 
 // Server configuration
 type Server struct {
-	Host string
-	Port int
-}
-
-// Etcd configuration
-type Etcd struct {
 	Address string
 }
 
-type Scheduler struct {
-	Interval          int
-	AgentContactDelay int
+// Agent configuration
+type Agent struct {
+	Hostname string
 }
 
 // Configuration of agent
 type Configuration struct {
-	Auth      map[string]interface{}
-	Server    Server
-	Scheduler Scheduler
-	Etcd      Etcd
+	Server Server
+	Agent  Agent
 }
 
 // LoadConfig load a Configuration from a toml file
 func LoadConfig() (*Configuration, error) {
-	dat, err := ioutil.ReadFile("chinchilla.toml")
+	dat, err := ioutil.ReadFile("agent.toml")
 	if err != nil {
 		return nil, err
 	}
