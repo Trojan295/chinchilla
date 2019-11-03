@@ -38,7 +38,7 @@ jobs:
       - run:
           command: |
             apt update
-            apt install -y golang-glide zip
+            apt install -y golang-glide zip protobuf-compiler golang-goprotobuf-dev
       - run:
           command: VERSION=${CIRCLE_TAG:-$CIRCLE_SHA1} make release
       - store_artifacts:
