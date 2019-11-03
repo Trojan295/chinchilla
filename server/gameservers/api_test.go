@@ -35,9 +35,10 @@ func TestListAvailableGameservers(t *testing.T) {
 
 	res := supportedGameserversResponse{}
 	json.Unmarshal(w.Body.Bytes(), &res)
-	assert.Len(t, res, 2)
+	assert.Len(t, res, 3)
 	assert.Equal(t, "Minecraft", res[0].Name)
 	assert.Equal(t, "Factorio", res[1].Name)
+	assert.Equal(t, "Teamspeak", res[2].Name)
 	assert.Equal(t, 200, w.Code)
 }
 

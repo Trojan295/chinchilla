@@ -32,7 +32,11 @@ type GameserverManager struct {
 // NewGameserverManager creates a new GameserverManager
 func NewGameserverManager() GameserverManager {
 	return GameserverManager{
-		managers: []gameserverManager{minecraftGameserverManager{}, factorioGameserverManager{}},
+		managers: []gameserverManager{
+			minecraftGameserverManager{},
+			factorioGameserverManager{},
+			teamspeakGameserverManager{},
+		},
 	}
 }
 

@@ -98,8 +98,6 @@ func (service *SchedulerService) assignAgent(gameserver *server.Gameserver) erro
 }
 
 func (service *SchedulerService) Tick() error {
-	log.Printf("Starting next tick...")
-
 	gameservers, err := service.gameserverStore.ListGameservers()
 	if err != nil {
 		return err

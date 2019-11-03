@@ -77,7 +77,7 @@ func (manager *GameserverManager) GetGameservers() ([]*proto.Gameserver, error) 
 	ctx := context.Background()
 
 	args := filters.NewArgs()
-	args.Add("label", "chinchilla.agent.gameserver")
+	args.Add("label", "chinchilla.gameserver.uuid")
 
 	containers, err := manager.containers.ContainerList(ctx, types.ContainerListOptions{
 		Filters: args,
@@ -89,7 +89,6 @@ func (manager *GameserverManager) GetGameservers() ([]*proto.Gameserver, error) 
 	gameservers := make([]*proto.Gameserver, 0, len(containers))
 
 	for _, cont := range containers {
-
 		gameservers = append(gameservers, &proto.Gameserver{
 			UUID:   cont.Labels["chinchilla.gameserver.uuid"],
 			Status: proto.GameserverStatus_RUNNING,
@@ -252,9 +251,9 @@ func (manager *GameserverManager) removeGameServerContainer(containerID string) 
 	return manager.containers.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{Force: true})
 }
 
-func isForRemoval(server *proto.Gameserver, servers []*proto.GameserverDeployment) bool {
-	for _, server := range servers {
-		if server.UUID == server.UUID {
+func isForRemoval(server *proto.Gameserver, deployments []*proto.GameserverDeployment) bool {
+	for _, deployment := range deployments {
+		if deployment.UUID == server.UUID {
 			return false
 		}
 	}
