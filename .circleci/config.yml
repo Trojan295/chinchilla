@@ -60,6 +60,44 @@ jobs:
           command: |
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} release
 
+  build-docker:
+    docker:
+      - image: docker
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+          - "cf:b1:dd:8d:15:5a:8e:3e:1b:24:f4:d3:19:bc:01:93"
+      - checkout
+      - attach_workspace:
+          at: .
+      - setup_remote_docker
+      - run:
+          name: "Build docker images"
+          command: |
+            docker build -f docker/server/Dockerfile -t trojan295/chinchilla-server .
+            docker build -f docker/scheduler/Dockerfile -t trojan295/chinchilla-scheduler .
+            docker build -f docker/agent/Dockerfile -t trojan295/chinchilla-agent .
+
+  publish-dockerhub-image:
+    docker:
+      - image: docker
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+          - "cf:b1:dd:8d:15:5a:8e:3e:1b:24:f4:d3:19:bc:01:93"
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          command: |
+            docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
+            docker build -f docker/server/Dockerfile -t trojan295/chinchilla-server:${CIRCLE_TAG} .
+            docker build -f docker/scheduler/Dockerfile -t trojan295/chinchilla-scheduler:${CIRCLE_TAG} .
+            docker build -f docker/agent/Dockerfile -t trojan295/chinchilla-agent:${CIRCLE_TAG} .
+            docker push trojan295/chinchilla-server:${CIRCLE_TAG}
+            docker push trojan295/chinchilla-scheduler:${CIRCLE_TAG}
+            docker push trojan295/chinchilla-agent:${CIRCLE_TAG}
+
 workflows:
   version: 2
   lint_build_release:
@@ -68,16 +106,35 @@ workflows:
           filters:
             tags:
               only: /.*/
+
       - build:
           requires:
             - lint
           filters:
             tags:
               only: /.*/
+
       - publish-github-release:
           requires:
             - build
           context: Github
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d+$/
+
+      - build-docker:
+          requires:
+            - lint
+          filters:
+            tags:
+              only: /.*/
+
+      - publish-dockerhub-image:
+          requires:
+            - build-docker
+          context: Dockerhub
           filters:
             branches:
               ignore: /.*/
