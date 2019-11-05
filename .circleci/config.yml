@@ -88,6 +88,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - setup_remote_docker
       - run:
           command: |
             docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
