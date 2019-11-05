@@ -69,9 +69,9 @@ jobs:
       - run:
           name: "Build docker images"
           command: |
-            docker build -f docker/server/Dockerfile -t trojan295/chinchilla-server:${CIRCLE_TAG} .
-            docker build -f docker/scheduler/Dockerfile -t trojan295/chinchilla-scheduler:${CIRCLE_TAG} .
-            docker build -f docker/agent/Dockerfile -t trojan295/chinchilla-agent:${CIRCLE_TAG} .
+            docker build -f docker/server/Dockerfile -t trojan295/chinchilla-server .
+            docker build -f docker/scheduler/Dockerfile -t trojan295/chinchilla-scheduler .
+            docker build -f docker/agent/Dockerfile -t trojan295/chinchilla-agent .
 
   publish-dockerhub-image:
     docker:
