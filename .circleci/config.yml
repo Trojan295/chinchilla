@@ -60,7 +60,7 @@ jobs:
           command: |
             ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} release
 
-   publish-dockerhub-image:
+  build-docker:
     docker:
       - image: docker
     steps:
@@ -121,7 +121,6 @@ workflows:
           filters:
             tags:
               only: /.*/
-
 
       - publish-dockerhub-image:
           requires:
