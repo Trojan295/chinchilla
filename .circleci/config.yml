@@ -64,6 +64,10 @@ jobs:
     docker:
       - image: docker
     steps:
+      - add_ssh_keys:
+          fingerprints:
+          - "cf:b1:dd:8d:15:5a:8e:3e:1b:24:f4:d3:19:bc:01:93"
+      - checkout
       - attach_workspace:
           at: .
       - run:
@@ -77,6 +81,10 @@ jobs:
     docker:
       - image: docker
     steps:
+      - add_ssh_keys:
+          fingerprints:
+          - "cf:b1:dd:8d:15:5a:8e:3e:1b:24:f4:d3:19:bc:01:93"
+      - checkout
       - attach_workspace:
           at: .
       - run:
