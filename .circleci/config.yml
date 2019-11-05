@@ -70,6 +70,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - setup_remote_docker
       - run:
           name: "Build docker images"
           command: |
