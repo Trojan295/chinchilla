@@ -92,12 +92,12 @@ jobs:
       - run:
           command: |
             docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
-            docker build -f docker/server/Dockerfile -t trojan295/chinchilla-server:${CIRCLE_TAG} .
-            docker build -f docker/scheduler/Dockerfile -t trojan295/chinchilla-scheduler:${CIRCLE_TAG} .
-            docker build -f docker/agent/Dockerfile -t trojan295/chinchilla-agent:${CIRCLE_TAG} .
-            docker push trojan295/chinchilla-server:${CIRCLE_TAG}
-            docker push trojan295/chinchilla-scheduler:${CIRCLE_TAG}
-            docker push trojan295/chinchilla-agent:${CIRCLE_TAG}
+            docker build -f docker/server/Dockerfile -t trojan295/chinchilla-server:${CIRCLE_TAG:-$CIRLCE_BRANCH} .
+            docker build -f docker/scheduler/Dockerfile -t trojan295/chinchilla-scheduler:${CIRCLE_TAG:-$CIRLCE_BRANCH} .
+            docker build -f docker/agent/Dockerfile -t trojan295/chinchilla-agent:${CIRCLE_TAG:-$CIRLCE_BRANCH} .
+            docker push trojan295/chinchilla-server:${CIRCLE_TAG:-$CIRLCE_BRANCH}
+            docker push trojan295/chinchilla-scheduler:${CIRCLE_TAG:-$CIRLCE_BRANCH}
+            docker push trojan295/chinchilla-agent:${CIRCLE_TAG:-$CIRLCE_BRANCH}
 
 workflows:
   version: 2
@@ -140,4 +140,6 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^\d+\.\d+\.\d+$/
+              only:
+                - /^\d+\.\d+\.\d+$/
+                - master

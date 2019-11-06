@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -69,17 +68,11 @@ func main() {
 		panic(err)
 	}
 
-	ipsFlag := flag.String("ips", "", "")
-	flag.Parse()
-
-	if *ipsFlag == "" {
-		panic("Set -ips flag")
-	}
-
-	ipAddresses := strings.Split(*ipsFlag, ",")
+	ipAddresses := strings.Split(config.Agent.IPAddresses, ",")
 
 	log.Printf("Connecting to server at %s", serverAddress)
 	log.Printf("Using hostname: %s", hostname)
+	log.Printf("Advertising IP addresses: %s", ipAddresses)
 
 	conn, err := grpc.Dial(serverAddress, grpc.WithInsecure())
 	if err != nil {

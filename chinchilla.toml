@@ -6,6 +6,9 @@ port = 10110
 interval = 5
 agentContactDelay = 30
 
+[agent]
+ipAddresses = "127.0.0.1"
+
 [auth]
 type = "header"
 

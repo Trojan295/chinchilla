@@ -17,6 +17,11 @@ type Etcd struct {
 	Address string
 }
 
+// Agent configuration
+type Agent struct {
+	IPAddresses string
+}
+
 type Scheduler struct {
 	Interval          int
 	AgentContactDelay int
@@ -24,6 +29,7 @@ type Scheduler struct {
 
 // Configuration of agent
 type Configuration struct {
+	Agent     Agent
 	Auth      map[string]interface{}
 	Server    Server
 	Scheduler Scheduler
