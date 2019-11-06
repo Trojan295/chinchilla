@@ -49,3 +49,4 @@ deps:
 
 mockgen:
 	mockgen -destination mocks/mock_server.go -package mocks github.com/Trojan295/chinchilla/server AgentStore,GameserverStore
+	mockgen -destination mocks/mock_etcd_client.go -package mocks go.etcd.io/etcd/client KeysAPI

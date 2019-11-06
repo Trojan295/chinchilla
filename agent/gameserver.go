@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net"
 	"os"
 
 	"github.com/Trojan295/chinchilla/proto"
@@ -173,40 +172,29 @@ func createGameserverHostConfig(deployment *proto.GameserverDeployment, ipAddres
 	}
 }
 
-func findFreeIPAddress(ports []*proto.NetworkPort, allIPs []string) (*string, error) {
+func (manager *GameserverManager) findFreeIPAddress(ports []*proto.NetworkPort, allIPs []string) (*string, error) {
+	testPort := ports[0]
+
+	var testPortFilter string
+	if testPort.Protocol == proto.NetworkProtocol_TCP {
+		testPortFilter = fmt.Sprintf("%d/tcp", testPort.ContainerPort)
+	} else {
+		testPortFilter = fmt.Sprintf("%d/udp", testPort.ContainerPort)
+	}
+
 	for _, ip := range allIPs {
-		isFree := true
-		for _, networkPort := range ports {
-			if networkPort.Protocol == proto.NetworkProtocol_TCP {
-				addr := &net.TCPAddr{
-					IP:   net.ParseIP(ip),
-					Port: int(networkPort.ContainerPort),
-				}
-				ln, err := net.ListenTCP("tcp", addr)
+		args := filters.NewArgs()
+		args.Add("label", fmt.Sprintf("chinchilla.gameserver.ip_address=%s", ip))
+		args.Add("publish", testPortFilter)
 
-				if err != nil {
-					isFree = false
-					break
-				} else {
-					ln.Close()
-				}
-			} else {
-				addr := &net.UDPAddr{
-					IP:   net.ParseIP(ip),
-					Port: int(networkPort.ContainerPort),
-				}
-				ln, err := net.ListenUDP("udp", addr)
-
-				if err != nil {
-					isFree = false
-					break
-				} else {
-					ln.Close()
-				}
-			}
+		containers, err := manager.containers.ContainerList(context.Background(), types.ContainerListOptions{
+			Filters: args,
+		})
+		if err != nil {
+			continue
 		}
 
-		if isFree {
+		if len(containers) == 0 {
 			return &ip, nil
 		}
 	}
@@ -223,7 +211,7 @@ func (manager *GameserverManager) createGameserverContainer(deployment *proto.Ga
 	}
 	io.Copy(os.Stdout, reader)
 
-	ipAddress, err := findFreeIPAddress(deployment.Ports, manager.ipAddresses)
+	ipAddress, err := manager.findFreeIPAddress(deployment.Ports, manager.ipAddresses)
 	if err != nil {
 		return err
 	}

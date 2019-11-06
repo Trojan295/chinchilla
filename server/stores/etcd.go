@@ -37,18 +37,20 @@ func NewEtcdStore(config client.Config) (*EtcdStore, error) {
 }
 
 func (store *EtcdStore) setupNodes() error {
-	if _, err := store.keysAPI.Set(context.Background(), "/gameservers", "", &client.SetOptions{
-		Dir:       true,
-		PrevExist: "false",
-	}); err != nil {
-		return err
+	if _, err := store.keysAPI.Get(context.Background(), "/gameservers", nil); err != nil {
+		if _, err := store.keysAPI.Set(context.Background(), "/gameservers", "", &client.SetOptions{
+			Dir: true,
+		}); err != nil {
+			return err
+		}
 	}
 
-	if _, err := store.keysAPI.Set(context.Background(), "/agents", "", &client.SetOptions{
-		Dir:       true,
-		PrevExist: "false",
-	}); err != nil {
-		return err
+	if _, err := store.keysAPI.Get(context.Background(), "/agents", nil); err != nil {
+		if _, err := store.keysAPI.Set(context.Background(), "/agents", "", &client.SetOptions{
+			Dir: true,
+		}); err != nil {
+			return err
+		}
 	}
 
 	return nil
