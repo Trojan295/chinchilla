@@ -24,18 +24,34 @@ func NewEtcdStore(config client.Config) (*EtcdStore, error) {
 
 	kapi := client.NewKeysAPI(etcdClient)
 
-	kapi.Set(context.Background(), "/gameservers", "", &client.SetOptions{
-		Dir:       true,
-		PrevExist: "false",
-	})
-	kapi.Set(context.Background(), "/agents", "", &client.SetOptions{
-		Dir:       true,
-		PrevExist: "false",
-	})
-
-	return &EtcdStore{
+	store := &EtcdStore{
 		keysAPI: kapi,
-	}, nil
+	}
+
+	err = store.setupNodes()
+	if err != nil {
+		return nil, err
+	}
+
+	return store, nil
+}
+
+func (store *EtcdStore) setupNodes() error {
+	if _, err := store.keysAPI.Set(context.Background(), "/gameservers", "", &client.SetOptions{
+		Dir:       true,
+		PrevExist: "false",
+	}); err != nil {
+		return err
+	}
+
+	if _, err := store.keysAPI.Set(context.Background(), "/agents", "", &client.SetOptions{
+		Dir:       true,
+		PrevExist: "false",
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // RegisterAgent registers a new Agent
@@ -84,6 +100,10 @@ func (store *EtcdStore) GetAgent(UUID string) (*server.Agent, error) {
 // ListGameservers returns a Gameserver list
 func (store *EtcdStore) ListGameservers() ([]server.Gameserver, error) {
 	gameservers := make([]server.Gameserver, 0)
+
+	if err := store.setupNodes(); err != nil {
+		return gameservers, err
+	}
 
 	gsRes, err := store.keysAPI.Get(context.Background(), "/gameservers", nil)
 	if err != nil {
