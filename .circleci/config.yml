@@ -40,7 +40,7 @@ jobs:
             apt update
             apt install -y golang-glide zip protobuf-compiler golang-goprotobuf-dev
       - run:
-          command: VERSION=${CIRCLE_TAG:-$CIRCLE_SHA1} make release
+          command: VERSION=${CIRCLE_TAG:-$CIRCLE_SHA1} make release -j3
       - store_artifacts:
           path: release/chinchilla.zip
           destination: chinchilla.zip
@@ -74,9 +74,7 @@ jobs:
       - run:
           name: "Build docker images"
           command: |
-            docker build -f docker/server/Dockerfile -t trojan295/chinchilla-server .
-            docker build -f docker/scheduler/Dockerfile -t trojan295/chinchilla-scheduler .
-            docker build -f docker/agent/Dockerfile -t trojan295/chinchilla-agent .
+            VERSION=${CIRCLE_TAG:-$CIRCLE_BRANCH} make docker -j3
 
   publish-dockerhub-image:
     docker:
@@ -92,12 +90,7 @@ jobs:
       - run:
           command: |
             docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
-            docker build -f docker/server/Dockerfile -t trojan295/chinchilla-server:${CIRCLE_TAG:-$CIRCLE_BRANCH} .
-            docker build -f docker/scheduler/Dockerfile -t trojan295/chinchilla-scheduler:${CIRCLE_TAG:-$CIRCLE_BRANCH} .
-            docker build -f docker/agent/Dockerfile -t trojan295/chinchilla-agent:${CIRCLE_TAG:-$CIRCLE_BRANCH} .
-            docker push trojan295/chinchilla-server:${CIRCLE_TAG:-$CIRCLE_BRANCH}
-            docker push trojan295/chinchilla-scheduler:${CIRCLE_TAG:-$CIRCLE_BRANCH}
-            docker push trojan295/chinchilla-agent:${CIRCLE_TAG:-$CIRCLE_BRANCH}
+            VERSION=${CIRCLE_TAG:-$CIRCLE_BRANCH} make docker_push -j3
 
 workflows:
   version: 2

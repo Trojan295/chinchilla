@@ -27,13 +27,18 @@ type Scheduler struct {
 	AgentContactDelay int
 }
 
+type Elasticsearch struct {
+	Address string
+}
+
 // Configuration of agent
 type Configuration struct {
-	Agent     Agent
-	Auth      map[string]interface{}
-	Server    Server
-	Scheduler Scheduler
-	Etcd      Etcd
+	Agent         Agent
+	Auth          map[string]interface{}
+	Server        Server
+	Scheduler     Scheduler
+	Etcd          Etcd
+	Elasticsearch Elasticsearch
 }
 
 // LoadConfig load a Configuration from a toml file

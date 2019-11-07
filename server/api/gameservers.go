@@ -1,4 +1,4 @@
-package gameservers
+package api
 
 import (
 	"log"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/Trojan295/chinchilla/server"
 	"github.com/Trojan295/chinchilla/server/auth"
+	"github.com/Trojan295/chinchilla/server/gameservers"
 
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
@@ -43,21 +44,27 @@ type createGameserverRequest struct {
 
 type createGameserverResponse getGameserverResponse
 
+type getLogsResponse struct {
+	Lines []string `json:"lines"`
+}
+
 type gameserversAPI struct {
 	agentsStore       server.AgentStore
 	gameserverStore   server.GameserverStore
-	gameserverManager GameserverManager
+	logStore          gameservers.LogStore
+	gameserverManager gameservers.GameserverManager
 }
 
 // MountGameserverAPI func
-func MountGameserverAPI(r *gin.Engine, agStore server.AgentStore, gsStore server.GameserverStore) {
-	api := gameserversAPI{agStore, gsStore, NewGameserverManager()}
+func MountGameserverAPI(r *gin.Engine, agStore server.AgentStore, gsStore server.GameserverStore, logStore gameservers.LogStore) {
+	api := gameserversAPI{agStore, gsStore, logStore, gameservers.NewGameserverManager()}
 
 	group := r.Group("/gameservers/")
 	group.OPTIONS("/", api.getSupportedGameservers)
 	group.GET("/", auth.LoginRequired(), api.listGameservers)
 	group.POST("/", auth.LoginRequired(), api.createGameserver)
 	group.DELETE("/:uuid/", auth.LoginRequired(), api.deleteGameserver)
+	group.GET("/:uuid/logs/", auth.LoginRequired(), api.getGameserverLogs)
 }
 
 func (api *gameserversAPI) getSupportedGameservers(c *gin.Context) {
@@ -188,4 +195,34 @@ func (api *gameserversAPI) deleteGameserver(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusAccepted, gin.H{})
+}
+
+func (api *gameserversAPI) getGameserverLogs(c *gin.Context) {
+	UUID := c.Param("uuid")
+	userID := c.GetString("userID")
+
+	gameserver, err := api.gameserverStore.GetGameserver(UUID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{})
+		return
+	}
+
+	if gameserver.Definition.Owner != userID {
+		c.JSON(http.StatusNotFound, gin.H{})
+		return
+	}
+
+	logsRes, err := api.logStore.GetLogs(&gameservers.GetLogsRequest{
+		GameserverUUID: UUID,
+		Lines:          1000,
+	})
+	if err != nil {
+		log.Printf("gameserversAPI getGameserverLogs error: %v", err)
+		c.JSON(http.StatusServiceUnavailable, "")
+		return
+	}
+
+	c.JSON(http.StatusOK, getLogsResponse{
+		Lines: logsRes.Logs,
+	})
 }

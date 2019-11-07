@@ -1,4 +1,4 @@
-package gameservers
+package api
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 	"github.com/Trojan295/chinchilla/mocks"
 	"github.com/Trojan295/chinchilla/proto"
 	"github.com/Trojan295/chinchilla/server"
+	"github.com/Trojan295/chinchilla/server/gameservers"
 	"github.com/Trojan295/chinchilla/server/utils"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +24,7 @@ func TestListAvailableGameservers(t *testing.T) {
 	gameserverStore := mocks.NewMockGameserverStore(ctrl)
 
 	router := utils.SetupRouter()
-	MountGameserverAPI(router, agentStore, gameserverStore)
+	MountGameserverAPI(router, agentStore, gameserverStore, mocks.NewMockLogStore(ctrl))
 
 	claims := map[string]interface{}{}
 
@@ -96,7 +97,7 @@ func TestListUserGameservers(t *testing.T) {
 		AnyTimes()
 
 	router := utils.SetupRouter()
-	MountGameserverAPI(router, agentStore, gameserverStore)
+	MountGameserverAPI(router, agentStore, gameserverStore, mocks.NewMockLogStore(ctrl))
 
 	claims := map[string]interface{}{
 		"sub": "user1",
@@ -134,7 +135,7 @@ func TestCreateNewServer(t *testing.T) {
 		Times(1)
 
 	router := utils.SetupRouter()
-	MountGameserverAPI(router, agentStore, gameserverStore)
+	MountGameserverAPI(router, agentStore, gameserverStore, mocks.NewMockLogStore(ctrl))
 
 	claims := map[string]interface{}{
 		"sub": "user1",
@@ -186,7 +187,7 @@ func TestCannotDeleteOtherUserServer(t *testing.T) {
 		Times(1)
 
 	router := utils.SetupRouter()
-	MountGameserverAPI(router, agentStore, gameserverStore)
+	MountGameserverAPI(router, agentStore, gameserverStore, mocks.NewMockLogStore(ctrl))
 
 	claims := map[string]interface{}{
 		"sub": "user1",
@@ -205,8 +206,6 @@ func TestDeleteServer(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	agentStore := mocks.NewMockAgentStore(ctrl)
-
 	gameserverStore := mocks.NewMockGameserverStore(ctrl)
 	gameserverStore.EXPECT().
 		DeleteGameserver("serverUUID").
@@ -224,7 +223,12 @@ func TestDeleteServer(t *testing.T) {
 		Times(1)
 
 	router := utils.SetupRouter()
-	MountGameserverAPI(router, agentStore, gameserverStore)
+	MountGameserverAPI(
+		router,
+		mocks.NewMockAgentStore(ctrl),
+		gameserverStore,
+		mocks.NewMockLogStore(ctrl),
+	)
 
 	claims := map[string]interface{}{
 		"sub": "user1",
@@ -237,4 +241,90 @@ func TestDeleteServer(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, 202, w.Code)
+}
+
+func TestCannotGetOtherUsersServerLogs(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	gameserverStore := mocks.NewMockGameserverStore(ctrl)
+	gameserver := server.Gameserver{
+		Definition: server.GameserverDefinition{
+			Owner: "otheruser",
+		},
+	}
+	gameserverStore.EXPECT().
+		GetGameserver("serverUUID").
+		Return(&gameserver, nil).
+		Times(1)
+
+	router := utils.SetupRouter()
+	MountGameserverAPI(
+		router,
+		mocks.NewMockAgentStore(ctrl),
+		gameserverStore,
+		mocks.NewMockLogStore(ctrl),
+	)
+
+	claims := map[string]interface{}{
+		"sub": "user1",
+	}
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/gameservers/serverUUID/logs/", nil)
+
+	req.Header.Add("authorization", "Bearer "+utils.BuildToken(claims))
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, 404, w.Code)
+}
+
+func TestGetGameserverLogs(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	agentStore := mocks.NewMockAgentStore(ctrl)
+	gameserverStore := mocks.NewMockGameserverStore(ctrl)
+	logStore := mocks.NewMockLogStore(ctrl)
+	gameserver := server.Gameserver{
+		Definition: server.GameserverDefinition{
+			Owner: "user1",
+		},
+	}
+
+	lines := []string{"first", "second"}
+
+	gameserverStore.EXPECT().
+		GetGameserver("serverUUID").
+		Return(&gameserver, nil).
+		Times(1)
+
+	logStore.EXPECT().
+		GetLogs(&gameservers.GetLogsRequest{
+			GameserverUUID: "serverUUID",
+			Lines:          1000,
+		}).
+		Return(&gameservers.GetLogsResponse{
+			Logs: lines,
+		}, nil)
+
+	router := utils.SetupRouter()
+	MountGameserverAPI(router, agentStore, gameserverStore, logStore)
+
+	claims := map[string]interface{}{
+		"sub": "user1",
+	}
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/gameservers/serverUUID/logs/", nil)
+
+	req.Header.Add("authorization", "Bearer "+utils.BuildToken(claims))
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, 200, w.Code)
+
+	var res getLogsResponse
+	json.Unmarshal(w.Body.Bytes(), &res)
+
+	assert.Equal(t, lines, res.Lines)
 }
